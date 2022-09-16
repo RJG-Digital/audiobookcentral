@@ -4,12 +4,8 @@ const track = mongoose.Schema({
     path: {
         type: String
     },
-    number: {
+    trackNumber: {
         type: Number
-    },
-    audioBookId: {
-        type: mongoose.Types.ObjectId,
-        ref: 'audioBook'
     }
 })
 
@@ -20,8 +16,12 @@ const audioBookSchema = mongoose.Schema({
     author: {
         type: String
     },
-    description: {
+    image: {
         type: String
+    },
+    description: {
+        type: String,
+        default: null
     },
     genres: {
         type: [String]
