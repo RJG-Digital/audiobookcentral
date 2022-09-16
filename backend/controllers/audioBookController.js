@@ -120,6 +120,64 @@ const scrapeAudioBooks = asynchandler(async (req, res) => {
     } catch (error) {
 
     }
-})
+});
 
-export { scrapeAudioBooks };
+const findAudioBook = asynchandler(async (req, res) => {
+    (async () => {
+        // launch puppeteer
+        const browser = await puppeteer.launch({
+            headless: true,
+            args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        });
+        const page = await browser.newPage();
+        await page.setViewport({ width: 1366, height: 1268 });
+        try {
+            await page.goto(`${GOLDEN_AUDIO_BOOKS_URL}/?s=${req.params.bookName}`); // go to golden books URL.
+            await page.waitForSelector(".image-hover-wrapper", { visible: true });
+            let bookList = await page.$$(".image-hover-wrapper");
+            await bookList[0].click();
+            await page.waitForNavigation();
+            await page.mouse.move(1000, 40);
+            await page.waitForTimeout(2000);
+            // Get audio track handles:
+            let tracklist = await page.$$("audio");
+            // Get text that has authors name:
+            let image = await page.$eval('.wp-caption > img', (element) => {
+                return element.getAttribute('src');
+            });
+            let authorText = await page.$eval('figcaption.wp-caption-text', (element) => {
+                return element.textContent;
+            });
+            const authorName = authorText.split(' – ')[0].trim();
+            let bookName = authorText.split(' – ')[1].trim();
+            bookName = bookName.replace('Audiobook', '').trim();
+            let book = {
+                title: bookName,
+                author: authorName,
+                image,
+                tracks: [],
+            }
+            for (let i = 0; i < tracklist.length; i++) {
+                const url = await (await tracklist[i].getProperty('src')).jsonValue();
+                if (url && url !== '')
+                    book.tracks.push({
+                        trackNumber: i + 1,
+                        path: url
+                    })
+            }
+            await browser.close(); // close browser
+            return book;
+        } catch (error) {
+            console.log(error)
+        }
+    })()
+        .then(
+            (success) => {
+                return res.json(success);
+            },
+            (error) => { }
+        ),
+        (error) => { }
+});
+
+export { scrapeAudioBooks, findAudioBook };
