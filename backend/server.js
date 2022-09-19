@@ -13,7 +13,7 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use('/api/audiobooks', audioBookRoutes);
+app.use('/api/books', audioBookRoutes);
 app.use(notFound);
 app.use(errorHandler);
 

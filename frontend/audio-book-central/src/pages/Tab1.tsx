@@ -1,13 +1,24 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
-import ExploreContainer from '../components/ExploreContainer';
+import { IonButton, IonContent, IonHeader, IonInput, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+import { useRef, useState } from 'react';
+import axios from 'axios';
+
 import './Tab1.css';
 
 const Tab1: React.FC = () => {
+  // Search book
+  const search = async () => {
+    const searchText = searchRef.current?.value?.toString().trim();
+    const result = await axios.get(`http://localhost:5000/api/audiobooks/${searchText}`);
+    console.log(result.data);
+  }
+
+  const searchRef = useRef<HTMLIonInputElement>(null);
+  const [searchText, setSearchText] = useState<string>();
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Tab 1</IonTitle>
+          <IonTitle>Search</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
@@ -16,7 +27,8 @@ const Tab1: React.FC = () => {
             <IonTitle size="large">Tab 1</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <ExploreContainer name="Tab 1 page" />
+        <IonInput ref={searchRef}></IonInput>
+        <IonButton onClick={search}>Search Book</IonButton>
       </IonContent>
     </IonPage>
   );
