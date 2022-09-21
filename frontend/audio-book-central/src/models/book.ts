@@ -13,5 +13,21 @@ export interface AudioBookTrack {
 }
 
 export interface Book {
-
+    _id?: string;
+    title: string;
+    author: string;
+    image: string;
+    description: string;
+    googleId: string;
+    genres?: string[];
+    publisher: string[];
+    publishedDate: Date;
+    isbn_13: string;
+    isbn_10: string;
+    pageCount: number;
+    categories: string[];
+    language: string;
+    previewLink: string;
+    infoLink: string;
+    audioBook?: string;
 }

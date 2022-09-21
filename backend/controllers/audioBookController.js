@@ -126,7 +126,7 @@ const findAudioBook = asynchandler(async (req, res) => {
     (async () => {
         // launch puppeteer
         const browser = await puppeteer.launch({
-            headless: true,
+            headless: false,
             args: ['--no-sandbox', '--disable-setuid-sandbox'],
         });
         const page = await browser.newPage();
@@ -135,6 +135,10 @@ const findAudioBook = asynchandler(async (req, res) => {
             await page.goto(`${GOLDEN_AUDIO_BOOKS_URL}/?s=${req.params.bookName}`); // go to golden books URL.
             await page.waitForSelector(".image-hover-wrapper", { visible: true });
             let bookList = await page.$$(".image-hover-wrapper");
+            if(!bookList[0]) {
+                await browser.close();
+                return [];
+            }
             await bookList[0].click();
             await page.waitForNavigation();
             await page.mouse.move(1000, 40);
@@ -148,8 +152,8 @@ const findAudioBook = asynchandler(async (req, res) => {
             let authorText = await page.$eval('figcaption.wp-caption-text', (element) => {
                 return element.textContent;
             });
-            const authorName = authorText.split(' – ')[0].trim();
-            let bookName = authorText.split(' – ')[1].trim();
+            const authorName = authorText.split(' – ')[0]?.trim();
+            let bookName = authorText.split(' – ')[1]?.trim();
             bookName = bookName.replace('Audiobook', '').trim();
             let book = {
                 title: bookName,
@@ -168,16 +172,17 @@ const findAudioBook = asynchandler(async (req, res) => {
             await browser.close(); // close browser
             return book;
         } catch (error) {
-            console.log(error)
+            console.log(error);
+            await browser.close(); // close browser
         }
     })()
         .then(
             (success) => {
                 return res.json(success);
             },
-            (error) => { }
+            (error) => {res.json([]) }
         ),
-        (error) => { }
+        (error) => {res.json([]) }
 });
 
 export { scrapeAudioBooks, findAudioBook };

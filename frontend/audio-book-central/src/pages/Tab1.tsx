@@ -1,19 +1,30 @@
-import { IonButton, IonContent, IonHeader, IonInput, IonPage, IonTitle, IonToolbar } from '@ionic/react';
-import { useRef, useState } from 'react';
+import { IonButton, IonCol, IonContent, IonHeader, IonInput, IonPage, IonRow, IonSelect, IonSelectOption, IonTitle, IonToolbar } from '@ionic/react';
+import { useState } from 'react';
 import axios from 'axios';
 
 import './Tab1.css';
+import { Book } from '../models/book';
+import BookCard from '../components/BookCard/bookCard';
 
 const Tab1: React.FC = () => {
   // Search book
   const search = async () => {
-    const searchText = searchRef.current?.value?.toString().trim();
-    const result = await axios.get(`http://localhost:5000/api/audiobooks/${searchText}`);
+    console.log(searchText);
+    const payload = { searchType, searchText };
+    const result = await axios.post('http://localhost:5500/api/books/search', payload);
     console.log(result.data);
+    setBooks(result.data);
+  }
+  const searchTextChange = (event: any) => {
+    setSearchText(event.target.value);
   }
 
-  const searchRef = useRef<HTMLIonInputElement>(null);
+  const onSearchTypeChange = (event: any) => {
+    setSearchType(event.detail.value);
+  }
+  const [books, setBooks] = useState<Book[]>();
   const [searchText, setSearchText] = useState<string>();
+  const [searchType, setSearchType] = useState<string>('title');
   return (
     <IonPage>
       <IonHeader>
@@ -27,8 +38,24 @@ const Tab1: React.FC = () => {
             <IonTitle size="large">Tab 1</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <IonInput ref={searchRef}></IonInput>
+        <IonSelect value={searchType} onIonChange={(e) => onSearchTypeChange(e)} placeholder="Select fruit">
+          <IonSelectOption value="title">Title</IonSelectOption>
+          <IonSelectOption value="author">Author</IonSelectOption>
+          <IonSelectOption value="isbn">ISBN</IonSelectOption>
+        </IonSelect>
+        <IonInput onIonChange={(e) => searchTextChange(e)}></IonInput>
         <IonButton onClick={search}>Search Book</IonButton>
+        <IonRow className='row-wrapper'>
+          {
+            books?.map(book => {
+              return (
+                <IonCol key={book._id} className="book-col">
+                  <BookCard bookData={book}></BookCard>
+                </IonCol>
+              )
+            })
+          }
+        </IonRow>
       </IonContent>
     </IonPage>
   );

@@ -1,0 +1,38 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Search
+    </ion-title>
+    <ion-icon [color]="showScan ? 'primary':''" style="margin: 0 20px; font-size:30px" (click)="onScan()" slot="end" name="barcode-outline"></ion-icon>
+  </ion-toolbar>
+</ion-header>
+<ion-content [fullscreen]="true">
+  <ion-row class="row-wrapper" *ngIf="showSearch">
+    <ion-col>
+      <ion-select [(ngModel)]="searchType">
+        <ion-select-option value="title">Title</ion-select-option>
+        <ion-select-option value="author">Author</ion-select-option>
+        <ion-select-option value="isbn">ISBN</ion-select-option>
+      </ion-select>
+    </ion-col>
+    <ion-col>
+      <ion-input [(ngModel)]="searchText" placeholder="Criteria..."></ion-input>
+    </ion-col>
+    <ion-col>
+      <ion-button [disabled]="!searchText || searchText === ''" class="ion-float-right" (click)="search()">Search</ion-button>
+    </ion-col>
+  </ion-row>
+  <ion-row class="row-wrapper" *ngIf="showScan">
+
+  </ion-row>
+  <ion-row class="row-wrapper">
+    <ion-col *ngFor="let book of books">
+      <ion-card class="book-card" (click)="viewBookDetails(book)">
+        <ion-img [src]="book.image" class="book-img"></ion-img>
+        <p class="book-author">{{book.author}}</p>
+        <p class="book-title">{{book.title}}</p>
+      </ion-card>
+    </ion-col>
+  </ion-row>
+  <app-book-details [open]="openModal" [book]="selectedBook" (close)="openModal = false"></app-book-details>
+</ion-content>

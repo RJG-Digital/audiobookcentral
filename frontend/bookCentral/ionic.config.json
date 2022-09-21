@@ -1,0 +1,7 @@
+{
+  "name": "bookCentral",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
