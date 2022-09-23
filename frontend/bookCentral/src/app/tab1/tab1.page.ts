@@ -33,7 +33,7 @@ export class Tab1Page implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.library.
+  
   }
 
   public search(): void {
