@@ -7,6 +7,7 @@ import { AudioBookTrack, Book } from '../models/bookModels';
 import { BookService } from '../services/book.service';
 import { StorageService } from '../services/storage.service';
 import { ToastService } from '../services/toast.service';
+import { Howl } from "howler";
 
 @Component({
   selector: 'app-tab2',
@@ -20,6 +21,7 @@ export class Tab2Page implements OnInit, OnDestroy{
   public unsubscribe = new Subject<void>();
   public selectedTrack: AudioBookTrack;
   public openModal = false;
+  public player: Howl = null;
 
   constructor(
     private storageService: StorageService, 
@@ -69,6 +71,7 @@ export class Tab2Page implements OnInit, OnDestroy{
   public selectTrack(track: AudioBookTrack): void {
     this.selectedTrack = track;
     this.openModal = true;
+    this.start();
   }
 
   async presentAlert(menu: IonMenu,  book: Book) {
@@ -95,6 +98,14 @@ export class Tab2Page implements OnInit, OnDestroy{
     await alert.present();
     await alert.onDidDismiss();
   }
+
+  // Player 
+  public start() {
+    this.player = new Howl({
+      src: [this.selectedTrack.path]
+    })
+    this.player.play();
+  } 
 
 
   ngOnDestroy(): void {

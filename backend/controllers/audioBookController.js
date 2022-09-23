@@ -190,4 +190,65 @@ const findAudioBook = asynchandler(async (req, res) => {
         (error) => {res.json([]) }
 });
 
+const downloadAudioBook = asynchandler(async (req, res) => {
+    const bookName = req.params.bookName;
+    const {GOLDEN_AUDIO_BOOKS_URL} = config;
+    (async () => {
+        // launch puppeteer
+        const browser = await puppeteer.launch({
+            headless: true,
+            args: ['--no-sandbox', '--disable-setuid-sandbox'],
+          });
+          const page = await browser.newPage();
+          await page.setViewport({ width: 1366, height: 768});
+          try {
+            await page.goto(`${GOLDEN_AUDIO_BOOKS_URL}/?s=${bookName}`); // go to golden books URL.
+            await page.waitForSelector(".image-hover-wrapper", { visible: true });
+            let bookList = await page.$$(".image-hover-wrapper");
+            await bookList[0].click();
+            await page.waitForNavigation();
+            await page.waitForSelector('figcaption');
+            await page.screenshot({ path: 'buddy-screenshot.png' });
+            // Get text that has authors name:
+            let authorText = await page.$eval('figcaption', (element) => {
+                return element.innerHTML
+              });
+            const authorName = await authorText.split(' – ')[0].trim();
+            // Get audio track handles:
+            let tracklist = await page.$$("audio"); 
+
+            //Make directory for book if it doesn't yet exist
+            if(!fs.existsSync(`${__dirname}/audioBooks/${authorName}/${bookName}`)) {
+                fs.mkdir(`${__dirname}/audioBooks/${authorName}/${bookName}`, { recursive: true }, (err) => {
+                    if (err) throw err;
+                });
+            }
+
+            for(let i = 0; i < tracklist.length; i++) {
+                const url = await (await tracklist[i].getProperty('src')).jsonValue();
+                https.get(url,(res) => {
+                    // store the file
+                    const path = `${__dirname}/audioBooks/${authorName}/${bookName}/${bookName}-${(i + 1) < 10 ? '0' + (i + 1) : (i + 1)}.mp3`;
+                    const filePath = fs.createWriteStream(path);
+                    res.pipe(filePath);
+                    filePath.on('finish',() => {
+                        filePath.close();
+                        console.log('Download Completed');
+                    })
+                })
+            }
+
+            await browser.close(); // close browser
+          } catch (error) {
+              console.log(error)
+          }
+    })()
+    .then(
+        (success) => {
+            return res.json('Done');
+        }, 
+        (error) => {}
+    ), 
+    (error) => {}
+ });
 export { scrapeAudioBooks, findAudioBook };

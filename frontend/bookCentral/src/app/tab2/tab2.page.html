@@ -40,8 +40,10 @@
     <p *ngIf="selectedBook.audioBook">Track List:</p>
     <ion-list  *ngIf="selectedBook.audioBook">
       <ion-item *ngFor="let track of selectedBook.audioBook.tracks" (click)="selectTrack(track)">
-        <a [href]="track.path" target="_blank" style="text-decoration: none;">Track {{track.trackNumber}} </a>
+        {{track.trackNumber}}
+        <!-- <a [href]="track.path" target="_blank" style="text-decoration: none;">Track {{track.trackNumber}} </a> -->
       </ion-item>
     </ion-list>
+    <!-- Player -->
   </ion-content>
 </ion-menu>
