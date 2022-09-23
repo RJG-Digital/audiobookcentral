@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Book, BookSearchPayload } from '../models/bookModels';
 import { BookService } from '../services/book.service';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
@@ -6,13 +6,14 @@ import { StorageService } from 'src/app/services/storage.service';
 import { Browser } from '@capacitor/browser';
 import { take } from 'rxjs/operators'
 import { ToastService } from '../services/toast.service';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',
   styleUrls: ['tab1.page.scss']
 })
-export class Tab1Page {
+export class Tab1Page implements OnInit {
   public books: Book[] = [];
   public searchType: 'title' | 'author' | 'isbn' = 'title';
   public searchText = '';
@@ -20,6 +21,9 @@ export class Tab1Page {
   public selectedBook: Book;
   public showSearch = true;
   public showScan = false;
+  public audioBookFindDone = true;
+  public library:Book[] = [];
+  public unsubscribe$ = new Subject<void>();
 
   constructor(
     public bookService: BookService,
@@ -27,6 +31,10 @@ export class Tab1Page {
     private storageService: StorageService,
     private toastService: ToastService,
   ) { }
+
+  ngOnInit(): void {
+    this.library.
+  }
 
   public search(): void {
     if (this.searchText && this.searchText.trim() !== '') {
@@ -80,6 +88,7 @@ export class Tab1Page {
   }
 
   public searchAudioBook() {
+    this.audioBookFindDone = false;
     this.openModal = true;
     this.bookService.findAudioBook(this.selectedBook.author + ' ' + this.selectedBook.title)
       .pipe(take(1))
@@ -88,6 +97,7 @@ export class Tab1Page {
           console.log(book);
           this.selectedBook.audioBook = book;
         }
+        this.audioBookFindDone = true;
       });
   }
 }

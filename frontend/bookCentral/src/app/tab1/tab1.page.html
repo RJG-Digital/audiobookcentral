@@ -8,18 +8,18 @@
 </ion-header>
 <ion-content [fullscreen]="true" id="main-content">
   <ion-row class="row-wrapper" *ngIf="showSearch">
-    <ion-col>
-      <ion-select [(ngModel)]="searchType">
+    <ion-col sizeSm="3" sizeXs="12" sizeMd="2">
+      <ion-select interface="popover" [(ngModel)]="searchType">
         <ion-select-option value="title">Title</ion-select-option>
         <ion-select-option value="author">Author</ion-select-option>
         <ion-select-option value="isbn">ISBN</ion-select-option>
       </ion-select>
     </ion-col>
-    <ion-col>
+    <ion-col sizeSm="8" sizeMd="9" sizeXs="12">
       <ion-input [(ngModel)]="searchText" placeholder="Criteria..."></ion-input>
     </ion-col>
-    <ion-col>
-      <ion-button [disabled]="!searchText || searchText === ''" class="ion-float-right" (click)="search()">Search</ion-button>
+    <ion-col sizeSm="1" sizeMd="1" sizeXs="12">
+      <ion-button style="width: 100%;" [disabled]="!searchText || searchText === ''" class="ion-float-right" (click)="search()"><ion-icon name="search"></ion-icon></ion-button>
     </ion-col>
   </ion-row>
   <ion-row class="row-wrapper" *ngIf="showScan">

@@ -24,6 +24,7 @@
     "@capacitor/browser": "^4.0.1",
     "@capacitor/core": "4.2.0",
     "@capacitor/haptics": "4.0.1",
+    "@capacitor/ios": "4.3.0",
     "@capacitor/keyboard": "4.0.1",
     "@capacitor/status-bar": "4.0.1",
     "@ionic-native/barcode-scanner": "^5.36.0",
@@ -71,5 +72,4 @@
     "typescript": "~4.7.3"
   },
   "description": "An Ionic project"
-
 }
