@@ -154,20 +154,25 @@ const findAudioBook = asynchandler(async (req, res) => {
             });
             const authorName = authorText.split(' – ')[0]?.trim();
             let bookName = authorText.split(' – ')[1]?.trim();
-            bookName = bookName.replace('Audiobook', '').trim();
+            if(bookName && bookName.includes('Audiobook')){
+                bookName = bookName.replace('Audiobook', '').trim();
+            }
             let book = {
-                title: bookName,
+                title: bookName? bookName: '',
                 author: authorName,
                 image,
                 tracks: [],
             }
             for (let i = 0; i < tracklist.length; i++) {
                 const url = await (await tracklist[i].getProperty('src')).jsonValue();
-                if (url && url !== '')
+                if (url && url !== ''){
+                    const formattedUrl = url.split('?')[0];
                     book.tracks.push({
                         trackNumber: i + 1,
-                        path: url
+                        path: formattedUrl
                     })
+                }
+                
             }
             await browser.close(); // close browser
             return book;

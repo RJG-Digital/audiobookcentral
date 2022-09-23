@@ -45,7 +45,7 @@ export class StorageService {
 
   public async removeFromLibrary(value: string): Promise<void> {
     const storedBooks = await this.getLibrary();
-    const newBooks = storedBooks.filter(book => book.title !== value);
+    const newBooks = storedBooks.filter(book => book.googleId !== value);
     await this.storage.set('library', newBooks);
     this.library$.next(newBooks);
   }
@@ -64,7 +64,7 @@ export class StorageService {
 
   public async removeFromWishList(value: string): Promise<void> {
     const storedBooks = await this.getWishList();
-    const newBooks = storedBooks.filter(book => book.title !== value);
+    const newBooks = storedBooks.filter(book => book.googleId !== value);
     await this.storage.set('wishList', newBooks);
     this.wishList$.next(newBooks);
   }

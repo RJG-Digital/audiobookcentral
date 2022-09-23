@@ -4,6 +4,7 @@ import { Browser } from '@capacitor/browser';
 import { BookService } from 'src/app/services/book.service';
 import { StorageService } from 'src/app/services/storage.service';
 import { take } from 'rxjs/operators';
+import { ToastService } from 'src/app/services/toast.service';
 
 @Component({
   selector: 'app-book-details',
@@ -13,10 +14,11 @@ import { take } from 'rxjs/operators';
 export class BookDetailsComponent implements OnInit {
 @Input() open = false;
 @Input() book: Book;
+@Input() page = 'search';
 
 @Output() close = new EventEmitter<void>();
 
-  constructor(private bookService: BookService, private storageService: StorageService) { }
+  constructor(private bookService: BookService, private storageService: StorageService, private toastService: ToastService) { }
 
   ngOnInit() {}
 
@@ -24,16 +26,15 @@ export class BookDetailsComponent implements OnInit {
     this.close.emit();
   }
 
-  public async openSite (url: string) {
-      await Browser.open({ url });
-    };
-
   public addToWishList() {
     this.storageService.addToWishList(this.book);
   }
 
   public addToLibrary() {
     this.storageService.addToLibrary(this.book);
+    this.close.emit();
+    this.toastService.presentToast('Added To Library!', 'success');
+
   }
 
   public searchAudioBook() {
