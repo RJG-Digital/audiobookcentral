@@ -1,0 +1,70 @@
+<ion-modal [isOpen]="open" (willDismiss)="onWillDismiss()" [presentingElement]="track">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>
+          Audio Book
+        </ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="onWillDismiss()">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding" *ngIf="track">
+      <audio style="display: none;" #audioPlayer [src]="track.path" controls></audio>
+      <!-- Book Cover -->
+      <ion-row style="justify-content: center;">
+        <p style="font-size: 14px;">{{book.author}} : {{book.title}}</p>
+      </ion-row>
+      <ion-row style="justify-content: center;">
+        <p style="font-size: 16px;">Track {{track.trackNumber}}</p>
+      </ion-row>
+      <ion-row style="margin:auto">
+        <ion-avatar [ngClass]="!audioPlayer.paused? 'rotate': ''" style="margin: 20px auto 20px auto;
+        height: 250px;
+        width: 250px;">
+          <img [src]="book.image" />
+        </ion-avatar>
+      </ion-row>
+      <ion-row>
+        <ion-range (ionKnobMoveEnd)="seek($event)" (ionKnobMoveStart)="startSeek()" *ngIf="audioPlayer"
+          [value]="audioProgress" min="0" [max]="audioPlayer.duration">
+          <ion-label *ngIf="audioPlayer.duration" slot="start">{{progressTime}}</ion-label>
+          <ion-label *ngIf="audioPlayer.duration" slot="end">{{convertHMS(audioPlayer.duration)}}</ion-label>
+        </ion-range>
+      </ion-row>
+      <ion-row style="text-align: center;">
+        <ion-col>
+          <ion-button fill="clear" (click)="goBackward(30)">
+            <ion-icon slot="icon-only" name="play-back-outline"></ion-icon>
+          </ion-button>
+        </ion-col>
+        <ion-col>
+          <ion-button fill="clear" (click)="goBackward(10)">
+            <ion-icon slot="icon-only" name="play-skip-back-outline"></ion-icon>
+          </ion-button>
+        </ion-col>
+        <ion-col>
+          <ion-button fill="clear" *ngIf="audioPlayer.paused" (click)="play()">
+            <ion-icon slot="icon-only" name="play-outline"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" *ngIf="!audioPlayer.paused" (click)="pause()">
+            <ion-icon slot="icon-only" name="pause-outline"></ion-icon>
+          </ion-button>
+        </ion-col>
+        <ion-col>
+          <ion-button fill="clear" (click)="goForward(10)">
+            <ion-icon slot="icon-only" name="play-skip-forward-outline"></ion-icon>
+          </ion-button>
+        </ion-col>
+        <ion-col>
+          <ion-button fill="clear" (click)="goForward(30)">
+            <ion-icon slot="icon-only" name="play-forward-outline"></ion-icon>
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-content>
+  </ng-template>
+</ion-modal>

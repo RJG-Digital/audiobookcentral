@@ -7,42 +7,41 @@ import { AudioBookTrack, Book } from '../models/bookModels';
 import { BookService } from '../services/book.service';
 import { StorageService } from '../services/storage.service';
 import { ToastService } from '../services/toast.service';
-import { Howl } from "howler";
 
 @Component({
   selector: 'app-tab2',
   templateUrl: 'tab2.page.html',
   styleUrls: ['tab2.page.scss']
 })
-export class Tab2Page implements OnInit, OnDestroy{
+export class Tab2Page implements OnInit, OnDestroy {
 
   public library: Book[] = [];
   public selectedBook: Book;
   public unsubscribe = new Subject<void>();
   public selectedTrack: AudioBookTrack;
   public openModal = false;
-  public player: Howl = null;
+
 
   constructor(
-    private storageService: StorageService, 
+    private storageService: StorageService,
     private bookService: BookService,
     private alertController: AlertController,
-    private toastService: ToastService, 
-    ) {}
+    private toastService: ToastService,
+  ) { }
 
-   ngOnInit(): void {
-    this.getLibrary();   
+  ngOnInit(): void {
+    this.getLibrary();
   }
 
   private getLibrary() {
     this.storageService.library$
-    .pipe(takeUntil(this.unsubscribe))
-    .subscribe(lib => {
-     this.library = lib;
-    });
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(lib => {
+        this.library = lib;
+      });
   }
 
-  public deleteBook(menu: IonMenu,  book: Book): void {
+  public deleteBook(menu: IonMenu, book: Book): void {
     this.storageService.removeFromLibrary(book.googleId);
     menu.close();
     this.getLibrary();
@@ -71,10 +70,9 @@ export class Tab2Page implements OnInit, OnDestroy{
   public selectTrack(track: AudioBookTrack): void {
     this.selectedTrack = track;
     this.openModal = true;
-    this.start();
   }
 
-  async presentAlert(menu: IonMenu,  book: Book) {
+  async presentAlert(menu: IonMenu, book: Book) {
     const alert = await this.alertController.create({
       header: 'Confirm',
       message: 'Are you sure that you want to delete this book?',
@@ -83,7 +81,7 @@ export class Tab2Page implements OnInit, OnDestroy{
           text: 'Cancel',
           role: 'cancel',
           handler: () => {
-         
+
           },
         },
         {
@@ -99,14 +97,7 @@ export class Tab2Page implements OnInit, OnDestroy{
     await alert.onDidDismiss();
   }
 
-  // Player 
-  public start() {
-    this.player = new Howl({
-      src: [this.selectedTrack.path]
-    })
-    this.player.play();
-  } 
-
+  // Player
 
   ngOnDestroy(): void {
     this.unsubscribe.next();

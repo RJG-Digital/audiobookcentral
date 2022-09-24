@@ -1,25 +1,29 @@
 <ion-modal [isOpen]="open" (willDismiss)="onWillDismiss()" [presentingElement]="book">
-    <ng-template>
-      <ion-header>
-        <ion-toolbar style="text-align: center;">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar style="text-align: center;">
+        <ion-title>
           Audio Book
-          <ion-buttons slot="end">
-            <ion-button (click)="onWillDismiss()">
-              <ion-icon name="close"></ion-icon>
-            </ion-button>
-          </ion-buttons>
-        </ion-toolbar>
-      </ion-header>
-      <ion-content  *ngIf="!book.audioBook"> 
-        <ion-spinner style="position: absolute;top: 50%;left: 50%;" name="lines"></ion-spinner>
-      </ion-content>
-      <ion-content class="ion-padding"  *ngIf="book.audioBook.tracks.length > 0">
-        <p class="author-title">{{book.audioBook.author}}: {{book.audioBook.title}}</p>
-        <ion-img class="book-image" [src]="book.audioBook.image"></ion-img>
-        <P>Tracks: {{book.audioBook.tracks.length}}</P>
-        <ion-row style="margin: 20px auto; float:right" *ngIf="page === 'search'">
-            <ion-button expand="block" *ngIf="book.audioBook && book.audioBook.tracks.length > 0" (click)="addToLibrary()"><ion-icon name="save"></ion-icon></ion-button>
-        </ion-row>
-      </ion-content>
-    </ng-template>
-  </ion-modal>
+        </ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="onWillDismiss()">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content *ngIf="!book.audioBook">
+      <ion-spinner style="position: absolute;top: 50%;left: 50%;" name="lines"></ion-spinner>
+    </ion-content>
+    <ion-content class="ion-padding" *ngIf="book.audioBook.tracks.length > 0">
+      <p class="author-title">{{book.audioBook.author}}: {{book.audioBook.title}}</p>
+      <ion-img class="book-image" [src]="book.audioBook.image"></ion-img>
+      <P>Tracks: {{book.audioBook.tracks.length}}</P>
+      <ion-row style="margin: 20px auto; float:right" *ngIf="page === 'search'">
+        <ion-button expand="block" *ngIf="book.audioBook && book.audioBook.tracks.length > 0" (click)="addToLibrary()">
+          <ion-icon name="save"></ion-icon>
+        </ion-button>
+      </ion-row>
+    </ion-content>
+  </ng-template>
+</ion-modal>

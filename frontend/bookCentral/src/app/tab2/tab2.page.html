@@ -8,24 +8,28 @@
 <ion-content [fullscreen]="true">
   <ion-list *ngIf="library.length > 0" id="library-content">
     <ion-menu-toggle menu="library">
-    <ion-item *ngFor="let book of library" (click)="selectBook(book)">
-      <ion-img [src]="book.image" style="height: 50px; margin-right:20px"></ion-img>
-      <p>{{book.title}}</p>
-      <ion-icon style="font-size: 26px; margin-left: 20px; color:#DB4437" *ngIf="book.audioBook" name="headset-outline"></ion-icon>
-    </ion-item>
-  </ion-menu-toggle>
+      <ion-item *ngFor="let book of library" (click)="selectBook(book)">
+        <ion-img [src]="book.image" style="height: 50px; margin-right:20px"></ion-img>
+        <p>{{book.title}}</p>
+        <ion-icon style="font-size: 26px; margin-left: 20px; color:#DB4437" *ngIf="book.audioBook"
+          name="headset-outline"></ion-icon>
+      </ion-item>
+    </ion-menu-toggle>
   </ion-list>
 </ion-content>
 
 <ion-menu #menu menuId="library" side="end" contentId="library-content">
   <ion-header>
     <ion-toolbar style="text-align: center;">
-      <ion-icon class="icon-spacing" id="google" (click)="openSite(selectedBook.previewLink)" name="logo-google"></ion-icon>
-      <ion-icon *ngIf="selectedBook && selectedBook.audioBook" class="icon-spacing" id="audioBook" (click)="searchAudioBook()" name="headset-outline"></ion-icon>
-        <ion-icon (click)="presentAlert(menu, selectedBook)" class="icon-spacing" color="danger" slot="end" name="trash-outline"></ion-icon>
+      <ion-icon class="icon-spacing" id="google" (click)="openSite(selectedBook.previewLink)" name="logo-google">
+      </ion-icon>
+      <ion-icon *ngIf="selectedBook && selectedBook.audioBook" class="icon-spacing" id="audioBook"
+        (click)="searchAudioBook()" name="headset-outline"></ion-icon>
+      <ion-icon (click)="presentAlert(menu, selectedBook)" class="icon-spacing" color="danger" slot="end"
+        name="trash-outline"></ion-icon>
     </ion-toolbar>
   </ion-header>
-  <ion-content class="ion-padding"  *ngIf="selectedBook">
+  <ion-content class="ion-padding" *ngIf="selectedBook">
     <p class="author-title">{{selectedBook.author}}: {{selectedBook.title}}</p>
     <ion-img class="book-image" [src]="selectedBook.image"></ion-img>
     <p class="book-data">Page Count: {{selectedBook.pageCount}}</p>
@@ -38,12 +42,13 @@
       <p class="desc">{{selectedBook.description}}</p>
     </div>
     <p *ngIf="selectedBook.audioBook">Track List:</p>
-    <ion-list  *ngIf="selectedBook.audioBook">
-      <ion-item *ngFor="let track of selectedBook.audioBook.tracks" (click)="selectTrack(track)">
+    <ion-list *ngIf="selectedBook.audioBook">
+      <ion-item button *ngFor="let track of selectedBook.audioBook.tracks" (click)="selectTrack(track)">
         {{track.trackNumber}}
-        <!-- <a [href]="track.path" target="_blank" style="text-decoration: none;">Track {{track.trackNumber}} </a> -->
       </ion-item>
     </ion-list>
-    <!-- Player -->
   </ion-content>
+  <app-audio-book-player *ngIf="selectedBook && selectedTrack" [track]="selectedTrack" [open]="openModal"
+    (close)="openModal = false" [book]="selectedBook">
+  </app-audio-book-player>
 </ion-menu>

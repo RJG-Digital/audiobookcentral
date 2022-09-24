@@ -12,15 +12,15 @@ import { ToastService } from 'src/app/services/toast.service';
   styleUrls: ['./book-details.component.scss'],
 })
 export class BookDetailsComponent implements OnInit {
-@Input() open = false;
-@Input() book: Book;
-@Input() page = 'search';
+  @Input() open = false;
+  @Input() book: Book;
+  @Input() page = 'search';
 
-@Output() close = new EventEmitter<void>();
+  @Output() close = new EventEmitter<void>();
 
   constructor(private bookService: BookService, private storageService: StorageService, private toastService: ToastService) { }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   public onWillDismiss() {
     this.close.emit();
@@ -31,19 +31,26 @@ export class BookDetailsComponent implements OnInit {
   }
 
   public addToLibrary() {
-    this.storageService.addToLibrary(this.book);
-    this.close.emit();
-    this.toastService.presentToast('Added To Library!', 'success');
-
+    this.bookService.downloadBook(this.book.audioBook)
+      .pipe(take(1))
+      .subscribe(book => {
+        if (book) {
+          console.log(book);
+          this.book.audioBook = book;
+          this.storageService.addToLibrary(this.book);
+          this.close.emit();
+          this.toastService.presentToast('Added To Library!', 'success');
+        }
+      })
   }
 
   public searchAudioBook() {
     this.bookService.findAudioBook(this.book.author + ' ' + this.book.title)
-    .pipe(take(1))
-    .subscribe(book => {
-      if(book) {
-        
-      }
-    });
+      .pipe(take(1))
+      .subscribe(book => {
+        if (book) {
+
+        }
+      });
   }
 }

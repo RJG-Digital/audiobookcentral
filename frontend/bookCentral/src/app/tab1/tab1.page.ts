@@ -22,7 +22,7 @@ export class Tab1Page implements OnInit {
   public showSearch = true;
   public showScan = false;
   public audioBookFindDone = true;
-  public library:Book[] = [];
+  public library: Book[] = [];
   public unsubscribe$ = new Subject<void>();
 
   constructor(
@@ -33,7 +33,7 @@ export class Tab1Page implements OnInit {
   ) { }
 
   ngOnInit(): void {
-  
+
   }
 
   public search(): void {

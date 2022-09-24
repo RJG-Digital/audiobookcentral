@@ -7,6 +7,8 @@ import {
     CATEGORY_ITEM
 } from '../config/constants.js';
 import AudioBook from '../models/audioBook.js';
+import fs from 'fs';
+import https from 'https'
 
 const scrapeAudioBooks = asynchandler(async (req, res) => {
     const browser = await puppeteer.launch({
@@ -135,7 +137,7 @@ const findAudioBook = asynchandler(async (req, res) => {
             await page.goto(`${GOLDEN_AUDIO_BOOKS_URL}/?s=${req.params.bookName}`); // go to golden books URL.
             await page.waitForSelector(".image-hover-wrapper", { visible: true });
             let bookList = await page.$$(".image-hover-wrapper");
-            if(!bookList[0]) {
+            if (!bookList[0]) {
                 await browser.close();
                 return [];
             }
@@ -154,25 +156,24 @@ const findAudioBook = asynchandler(async (req, res) => {
             });
             const authorName = authorText.split(' – ')[0]?.trim();
             let bookName = authorText.split(' – ')[1]?.trim();
-            if(bookName && bookName.includes('Audiobook')){
+            if (bookName && bookName.includes('Audiobook')) {
                 bookName = bookName.replace('Audiobook', '').trim();
             }
             let book = {
-                title: bookName? bookName: '',
+                title: bookName ? bookName : '',
                 author: authorName,
                 image,
                 tracks: [],
             }
             for (let i = 0; i < tracklist.length; i++) {
                 const url = await (await tracklist[i].getProperty('src')).jsonValue();
-                if (url && url !== ''){
+                if (url && url !== '') {
                     const formattedUrl = url.split('?')[0];
                     book.tracks.push({
                         trackNumber: i + 1,
                         path: formattedUrl
                     })
                 }
-                
             }
             await browser.close(); // close browser
             return book;
@@ -185,70 +186,37 @@ const findAudioBook = asynchandler(async (req, res) => {
             (success) => {
                 return res.json(success);
             },
-            (error) => {res.json([]) }
+            (error) => { res.json([]) }
         ),
-        (error) => {res.json([]) }
+        (error) => { res.json([]) }
 });
 
-const downloadAudioBook = asynchandler(async (req, res) => {
-    const bookName = req.params.bookName;
-    const {GOLDEN_AUDIO_BOOKS_URL} = config;
-    (async () => {
-        // launch puppeteer
-        const browser = await puppeteer.launch({
-            headless: true,
-            args: ['--no-sandbox', '--disable-setuid-sandbox'],
-          });
-          const page = await browser.newPage();
-          await page.setViewport({ width: 1366, height: 768});
-          try {
-            await page.goto(`${GOLDEN_AUDIO_BOOKS_URL}/?s=${bookName}`); // go to golden books URL.
-            await page.waitForSelector(".image-hover-wrapper", { visible: true });
-            let bookList = await page.$$(".image-hover-wrapper");
-            await bookList[0].click();
-            await page.waitForNavigation();
-            await page.waitForSelector('figcaption');
-            await page.screenshot({ path: 'buddy-screenshot.png' });
-            // Get text that has authors name:
-            let authorText = await page.$eval('figcaption', (element) => {
-                return element.innerHTML
-              });
-            const authorName = await authorText.split(' – ')[0].trim();
-            // Get audio track handles:
-            let tracklist = await page.$$("audio"); 
-
-            //Make directory for book if it doesn't yet exist
-            if(!fs.existsSync(`${__dirname}/audioBooks/${authorName}/${bookName}`)) {
-                fs.mkdir(`${__dirname}/audioBooks/${authorName}/${bookName}`, { recursive: true }, (err) => {
-                    if (err) throw err;
-                });
-            }
-
-            for(let i = 0; i < tracklist.length; i++) {
-                const url = await (await tracklist[i].getProperty('src')).jsonValue();
-                https.get(url,(res) => {
-                    // store the file
-                    const path = `${__dirname}/audioBooks/${authorName}/${bookName}/${bookName}-${(i + 1) < 10 ? '0' + (i + 1) : (i + 1)}.mp3`;
-                    const filePath = fs.createWriteStream(path);
-                    res.pipe(filePath);
-                    filePath.on('finish',() => {
-                        filePath.close();
-                        console.log('Download Completed');
-                    })
-                })
-            }
-
-            await browser.close(); // close browser
-          } catch (error) {
-              console.log(error)
-          }
-    })()
-    .then(
-        (success) => {
-            return res.json('Done');
-        }, 
-        (error) => {}
-    ), 
-    (error) => {}
- });
-export { scrapeAudioBooks, findAudioBook };
+const downloadBook = asynchandler(async (req, res) => {
+    const { book } = req.body;
+    let count = 0;
+    const dir = `E:/online_books/audioBooks/${book.author}/${book.title}`;
+    const webDir = `http://192.168.4.103:8887/audioBooks/${book.author}/${book.title}`
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+    }
+    for (let i = 0; i < book.tracks.length; i++) {
+        https.get(book.tracks[i].path, (resp) => {
+            // store the file
+            const path = `${dir}/${book.title}-${(i + 1) < 10 ? '0' + (i + 1) : (i + 1)}.mp3`;
+            const webPath = `${webDir}/${book.title}-${(i + 1) < 10 ? '0' + (i + 1) : (i + 1)}.mp3`;
+            const filePath = fs.createWriteStream(path);
+            resp.pipe(filePath);
+            filePath.on('finish', () => {
+                filePath.close();
+                count++;
+                console.log('Download Completed');
+                book.tracks[i].path = webPath;
+                console.log(count, ' ', book.tracks.length)
+                if (count === (book.tracks.length)) {
+                    res.json(book);
+                }
+            })
+        });
+    }
+})
+export { scrapeAudioBooks, findAudioBook, downloadBook };
