@@ -31,6 +31,7 @@ export class BookDetailsComponent implements OnInit {
   }
 
   public addToLibrary() {
+    console.log(this.book.audioBook);
     this.bookService.downloadBook(this.book.audioBook)
       .pipe(take(1))
       .subscribe(book => {

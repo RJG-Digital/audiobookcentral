@@ -165,6 +165,42 @@ const findAudioBook = asynchandler(async (req, res) => {
                 image,
                 tracks: [],
             }
+
+
+
+            let trackPages = await page.$$(".post-page-numbers");
+            if(trackPages && trackPages.length) {
+                console.log('right here')
+                for(let i = 0; i < trackPages.length; i++) {
+                    if(i !== 0) {
+                        page.waitForSelector(".post-page-numbers");
+                        trackPages = await page.$$(".post-page-numbers");
+                        await Promise.all([
+                            trackPages[i].click(),
+                            page.waitForNavigation(),
+                             page.waitForTimeout(2000)
+                        ]);
+                    }
+                    tracklist = await page.$$("audio");
+                    for (let i = 0; i < tracklist.length; i++) {
+                        const url = await (await tracklist[i].getProperty('src')).jsonValue();
+                        if (url && url !== '') {
+                            const formattedUrl = url.split('?')[0];
+                            book.tracks.push({
+                                trackNumber: i + 1,
+                                path: formattedUrl
+                            })
+                        }
+                    } 
+                        trackPages = await page.$$(".post-page-numbers");
+                        console.log(i);
+                }
+                book.tracks = book.tracks.map((track, index) => {return {trackNumber: index + 1, path: track.path}})
+            } else {
+
+
+
+
             for (let i = 0; i < tracklist.length; i++) {
                 const url = await (await tracklist[i].getProperty('src')).jsonValue();
                 if (url && url !== '') {
@@ -175,6 +211,7 @@ const findAudioBook = asynchandler(async (req, res) => {
                     })
                 }
             }
+        }
             await browser.close(); // close browser
             return book;
         } catch (error) {
