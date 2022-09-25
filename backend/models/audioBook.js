@@ -24,7 +24,8 @@ const audioBookSchema = mongoose.Schema({
         default: null
     },
     genres: {
-        type: [String]
+        type: [String],
+        default: []
     },
     tracks: {
         type: [track]
