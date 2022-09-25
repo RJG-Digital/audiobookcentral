@@ -21,7 +21,9 @@ export class BookDetailsComponent implements OnInit {
 
   constructor(private bookService: BookService, private storageService: StorageService, private toastService: ToastService) { }
 
-  ngOnInit() { }
+  ngOnInit() { 
+    console.log(this.audioBookOptions);
+  }
 
   public onWillDismiss() {
     this.close.emit();
@@ -32,13 +34,14 @@ export class BookDetailsComponent implements OnInit {
   }
 
   public addToLibrary(audioBook: AudioBook) {
+    console.log(audioBook);
     if (audioBook._id) {
       this.book.audioBook = audioBook;
       this.storageService.addToLibrary(this.book);
       this.close.emit();
       this.toastService.presentToast('Added To Library!', 'success');
     } else {
-      this.bookService.downloadBook(this.book.audioBook)
+      this.bookService.downloadBook(audioBook)
         .pipe(take(1))
         .subscribe(ab => {
           if (ab) {

@@ -19,7 +19,7 @@
       <ion-row style="margin: auto;">
         <ion-card *ngFor="let audioBook of audioBookOptions">
           <p class="author-title">{{audioBook.author}}: {{audioBook.title}}</p>
-          <ion-img class="book-image" [src]="book.audioBook.image"></ion-img>
+          <ion-img class="book-image" [src]="audioBook.image"></ion-img>
           <P>Tracks: {{audioBook.tracks.length}}</P>
           <ion-row style="margin: 20px auto; float:right" *ngIf="page === 'search'">
             <ion-button expand="block" *ngIf="audioBook && audioBook.tracks.length > 0"
