@@ -60,5 +60,5 @@
       <p class="desc">{{selectedBook.description}}</p>
     </div>
   </ion-content>
-  <app-book-details [open]="openModal" [book]="selectedBook" (close)="openModal = false"></app-book-details>
+  <app-book-details [open]="openModal" [audioBookOptions]="audioBookOptions" [book]="selectedBook" (close)="openModal = false"></app-book-details>
 </ion-menu>

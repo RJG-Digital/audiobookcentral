@@ -10,6 +10,9 @@ const track = mongoose.Schema({
 })
 
 const audioBookSchema = mongoose.Schema({
+    authorTitle: {
+        type: String
+    },
     title: {
         type: String
     },

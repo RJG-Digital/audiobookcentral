@@ -1,4 +1,6 @@
 export interface AudioBook {
+    _id?: string;
+    authorTitle?: string
     title: string;
     author: string;
     image: string;

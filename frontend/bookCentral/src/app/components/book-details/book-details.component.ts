@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Book } from 'src/app/models/bookModels';
-import { Browser } from '@capacitor/browser';
+import { AudioBook, Book } from 'src/app/models/bookModels';
 import { BookService } from 'src/app/services/book.service';
 import { StorageService } from 'src/app/services/storage.service';
 import { take } from 'rxjs/operators';
@@ -13,10 +12,12 @@ import { ToastService } from 'src/app/services/toast.service';
 })
 export class BookDetailsComponent implements OnInit {
   @Input() open = false;
+  @Input() audioBookOptions: AudioBook[];
   @Input() book: Book;
   @Input() page = 'search';
-
   @Output() close = new EventEmitter<void>();
+
+  public selectedAudioBook: AudioBook;
 
   constructor(private bookService: BookService, private storageService: StorageService, private toastService: ToastService) { }
 
@@ -30,28 +31,24 @@ export class BookDetailsComponent implements OnInit {
     this.storageService.addToWishList(this.book);
   }
 
-  public addToLibrary() {
-    console.log(this.book.audioBook);
-    this.bookService.downloadBook(this.book.audioBook)
+  public addToLibrary(audioBook: AudioBook) {
+    if(audioBook._id) {
+      this.book.audioBook = audioBook;
+          this.storageService.addToLibrary(this.book);
+          this.close.emit();
+          this.toastService.presentToast('Added To Library!', 'success');
+    } else {
+      this.bookService.downloadBook(this.book.audioBook)
       .pipe(take(1))
-      .subscribe(book => {
-        if (book) {
-          console.log(book);
-          this.book.audioBook = book;
+      .subscribe(ab => {
+        if (ab) {
+          console.log(ab);
+          this.book.audioBook = ab;
           this.storageService.addToLibrary(this.book);
           this.close.emit();
           this.toastService.presentToast('Added To Library!', 'success');
         }
-      })
-  }
-
-  public searchAudioBook() {
-    this.bookService.findAudioBook(this.book.author + ' ' + this.book.title)
-      .pipe(take(1))
-      .subscribe(book => {
-        if (book) {
-
-        }
       });
+    }
   }
 }

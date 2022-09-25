@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Book, BookSearchPayload } from '../models/bookModels';
+import { AudioBook, Book, BookSearchPayload } from '../models/bookModels';
 import { BookService } from '../services/book.service';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
 import { StorageService } from 'src/app/services/storage.service';
@@ -24,6 +24,7 @@ export class Tab1Page implements OnInit {
   public audioBookFindDone = true;
   public library: Book[] = [];
   public unsubscribe$ = new Subject<void>();
+  public audioBookOptions: AudioBook[] = [];
 
   constructor(
     public bookService: BookService,
@@ -92,12 +93,12 @@ export class Tab1Page implements OnInit {
     this.openModal = true;
     this.bookService.findAudioBook(this.selectedBook.author + ' ' + this.selectedBook.title)
       .pipe(take(1))
-      .subscribe(book => {
-        if (book) {
-          console.log(book);
-          this.selectedBook.audioBook = book;
+      .subscribe(audioBooks=> {
+        if (audioBooks) {
+          this.audioBookOptions = audioBooks;
+          console.log(audioBooks);
+          this.audioBookFindDone = true;
         }
-        this.audioBookFindDone = true;
       });
   }
 }
