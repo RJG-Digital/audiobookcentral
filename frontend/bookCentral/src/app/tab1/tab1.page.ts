@@ -93,7 +93,7 @@ export class Tab1Page implements OnInit {
     this.openModal = true;
     this.bookService.findAudioBook(this.selectedBook.author + ' ' + this.selectedBook.title)
       .pipe(take(1))
-      .subscribe(audioBooks=> {
+      .subscribe(audioBooks => {
         if (audioBooks) {
           this.audioBookOptions = audioBooks;
           console.log(audioBooks);

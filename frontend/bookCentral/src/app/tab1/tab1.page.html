@@ -3,7 +3,8 @@
     <ion-title>
       Search
     </ion-title>
-    <ion-icon [color]="showScan ? 'primary':''" style="margin: 0 20px; font-size:30px" (click)="onScan()" slot="end" name="barcode-outline"></ion-icon>
+    <ion-icon [color]="showScan ? 'primary':''" style="margin: 0 20px; font-size:30px" (click)="onScan()" slot="end"
+      name="barcode-outline"></ion-icon>
   </ion-toolbar>
 </ion-header>
 <ion-content [fullscreen]="true" id="main-content">
@@ -19,7 +20,10 @@
       <ion-input [(ngModel)]="searchText" placeholder="Criteria..."></ion-input>
     </ion-col>
     <ion-col sizeSm="1" sizeMd="1" sizeXs="12">
-      <ion-button style="width: 100%;" [disabled]="!searchText || searchText === ''" class="ion-float-right" (click)="search()"><ion-icon name="search"></ion-icon></ion-button>
+      <ion-button style="width: 100%;" [disabled]="!searchText || searchText === ''" class="ion-float-right"
+        (click)="search()">
+        <ion-icon name="search"></ion-icon>
+      </ion-button>
     </ion-col>
   </ion-row>
   <ion-row class="row-wrapper" *ngIf="showScan">
@@ -28,12 +32,12 @@
   <ion-row class="row-wrapper">
     <ion-col *ngFor="let book of books">
       <ion-menu-toggle menu="search">
-      <ion-card class="book-card" (click)="viewBookDetails(book)">
-        <ion-img [src]="book.image" class="book-img"></ion-img>
-        <p class="book-author">{{book.author}}</p>
-        <p class="book-title">{{book.title}}</p>
-      </ion-card>
-    </ion-menu-toggle>
+        <ion-card class="book-card" (click)="viewBookDetails(book)">
+          <ion-img [src]="book.image" class="book-img"></ion-img>
+          <p class="book-author">{{book.author}}</p>
+          <p class="book-title">{{book.title}}</p>
+        </ion-card>
+      </ion-menu-toggle>
     </ion-col>
   </ion-row>
 </ion-content>
@@ -41,13 +45,14 @@
 <ion-menu menuId="search" side="start" contentId="main-content">
   <ion-header>
     <ion-toolbar style="text-align: center;">
-      <ion-icon class="icon-spacing" id="google" (click)="openSite(selectedBook.previewLink)" name="logo-google"></ion-icon>
+      <ion-icon class="icon-spacing" id="google" (click)="openSite(selectedBook.previewLink)" name="logo-google">
+      </ion-icon>
       <ion-icon class="icon-spacing" id="wishList" (click)="addToWishList()" name="list-outline"></ion-icon>
       <ion-icon class="icon-spacing" id="library" (click)="addToLibrary()" name="book-outline"></ion-icon>
       <ion-icon class="icon-spacing" id="audioBook" (click)="searchAudioBook()" name="headset-outline"></ion-icon>
     </ion-toolbar>
   </ion-header>
-  <ion-content class="ion-padding"  *ngIf="selectedBook">
+  <ion-content class="ion-padding" *ngIf="selectedBook">
     <p class="author-title">{{selectedBook.author}}: {{selectedBook.title}}</p>
     <ion-img class="book-image" [src]="selectedBook.image"></ion-img>
     <p class="book-data">Page Count: {{selectedBook.pageCount}}</p>
@@ -60,5 +65,6 @@
       <p class="desc">{{selectedBook.description}}</p>
     </div>
   </ion-content>
-  <app-book-details [open]="openModal" [audioBookOptions]="audioBookOptions" [book]="selectedBook" (close)="openModal = false"></app-book-details>
+  <app-book-details [open]="openModal" [audioBookOptions]="audioBookOptions" [book]="selectedBook"
+    (close)="openModal = false"></app-book-details>
 </ion-menu>

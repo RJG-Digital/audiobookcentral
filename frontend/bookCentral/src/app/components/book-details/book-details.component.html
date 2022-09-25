@@ -22,7 +22,8 @@
           <ion-img class="book-image" [src]="book.audioBook.image"></ion-img>
           <P>Tracks: {{audioBook.tracks.length}}</P>
           <ion-row style="margin: 20px auto; float:right" *ngIf="page === 'search'">
-            <ion-button expand="block" *ngIf="audioBook && audioBook.tracks.length > 0" (click)="addToLibrary(audioBook)">
+            <ion-button expand="block" *ngIf="audioBook && audioBook.tracks.length > 0"
+              (click)="addToLibrary(audioBook)">
               <ion-icon name="save"></ion-icon>
             </ion-button>
           </ion-row>

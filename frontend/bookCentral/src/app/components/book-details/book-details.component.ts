@@ -32,23 +32,23 @@ export class BookDetailsComponent implements OnInit {
   }
 
   public addToLibrary(audioBook: AudioBook) {
-    if(audioBook._id) {
+    if (audioBook._id) {
       this.book.audioBook = audioBook;
-          this.storageService.addToLibrary(this.book);
-          this.close.emit();
-          this.toastService.presentToast('Added To Library!', 'success');
+      this.storageService.addToLibrary(this.book);
+      this.close.emit();
+      this.toastService.presentToast('Added To Library!', 'success');
     } else {
       this.bookService.downloadBook(this.book.audioBook)
-      .pipe(take(1))
-      .subscribe(ab => {
-        if (ab) {
-          console.log(ab);
-          this.book.audioBook = ab;
-          this.storageService.addToLibrary(this.book);
-          this.close.emit();
-          this.toastService.presentToast('Added To Library!', 'success');
-        }
-      });
+        .pipe(take(1))
+        .subscribe(ab => {
+          if (ab) {
+            console.log(ab);
+            this.book.audioBook = ab;
+            this.storageService.addToLibrary(this.book);
+            this.close.emit();
+            this.toastService.presentToast('Added To Library!', 'success');
+          }
+        });
     }
   }
 }
