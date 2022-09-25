@@ -125,8 +125,10 @@ const scrapeAudioBooks = asynchandler(async (req, res) => {
 });
 
 const findAudioBook = asynchandler(async (req, res) => {
+    console.log(req.params.bookName);
     const regex = new RegExp(req.params.bookName, 'i');
     const audioBooks = await AudioBook.find({ authorTitle: { $regex: regex } });
+    console.log(audioBooks);
     if (audioBooks && audioBooks.length > 0) {
         console.log(audioBooks);
         res.json(audioBooks);
@@ -257,7 +259,7 @@ const downloadBook = asynchandler(async (req, res) => {
                 if (count === (book.tracks.length)) {
 
                     const audioBooks = await AudioBook.find({ authorTitle: book.authorTitle });
-                    if (!audioBooks) {
+                    if (!audioBooks || audioBooks.length === 0) {
                         await AudioBook.create(book);
                     }
                     res.json(book);
