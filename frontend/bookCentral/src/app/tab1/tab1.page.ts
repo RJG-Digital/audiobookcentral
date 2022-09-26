@@ -96,9 +96,8 @@ export class Tab1Page implements OnInit {
       .subscribe(audioBooks => {
         if (audioBooks) {
           this.audioBookOptions = audioBooks;
-          console.log(audioBooks);
-          this.audioBookFindDone = true;
         }
+        this.audioBookFindDone = true;
       });
   }
 }

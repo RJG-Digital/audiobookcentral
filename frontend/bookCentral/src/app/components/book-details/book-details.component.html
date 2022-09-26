@@ -12,22 +12,26 @@
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
-    <ion-content *ngIf="!audioBookOptions">
+    <ion-content *ngIf="!audioBookFindDone">
       <ion-spinner style="position: absolute;top: 50%;left: 50%;" name="lines"></ion-spinner>
     </ion-content>
-    <ion-content class="ion-padding" *ngIf="audioBookOptions.length > 0">
-      <ion-row style="margin: auto;">
-        <ion-card *ngFor="let audioBook of audioBookOptions">
+    <ion-content class="ion-padding">
+      <ion-row style="justify-content: center;" *ngIf="audioBookOptions.length > 0 && audioBookFindDone">
+        <ion-card style="padding:10px;" *ngFor="let audioBook of audioBookOptions">
           <p class="author-title">{{audioBook.author}}: {{audioBook.title}}</p>
           <ion-img class="book-image" [src]="audioBook.image"></ion-img>
-          <P>Tracks: {{audioBook.tracks.length}}</P>
-          <ion-row style="margin: 20px auto; float:right" *ngIf="page === 'search'">
-            <ion-button expand="block" *ngIf="audioBook && audioBook.tracks.length > 0"
+          <P style="text-align: center;">Tracks: {{audioBook.tracks.length}}</P>
+          <ion-row *ngIf="page === 'search'">
+            <ion-button style="width:100%" expand="block" *ngIf="audioBook && audioBook.tracks.length > 0"
               (click)="addToLibrary(audioBook)">
               <ion-icon name="save"></ion-icon>
             </ion-button>
           </ion-row>
         </ion-card>
+      </ion-row>
+      <ion-row style="justify-content: center; margin-top: 40%;"
+        *ngIf="audioBookOptions.length === 0 && audioBookFindDone">
+        <h3>No Audio books were found...</h3>
       </ion-row>
     </ion-content>
   </ng-template>

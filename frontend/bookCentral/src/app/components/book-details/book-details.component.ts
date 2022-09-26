@@ -13,6 +13,7 @@ import { ToastService } from 'src/app/services/toast.service';
 export class BookDetailsComponent implements OnInit {
   @Input() open = false;
   @Input() audioBookOptions: AudioBook[];
+  @Input() audioBookFindDone = false;
   @Input() book: Book;
   @Input() page = 'search';
   @Output() close = new EventEmitter<void>();
@@ -21,7 +22,7 @@ export class BookDetailsComponent implements OnInit {
 
   constructor(private bookService: BookService, private storageService: StorageService, private toastService: ToastService) { }
 
-  ngOnInit() { 
+  ngOnInit() {
     console.log(this.audioBookOptions);
   }
 
