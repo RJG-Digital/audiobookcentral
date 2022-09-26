@@ -37,6 +37,7 @@ export class StorageService {
   }
 
   public async addToLibrary(book: Book): Promise<void> {
+    console.log(book);
     const storedBooks = await this.getLibrary();
     storedBooks.push(book);
     await this.storage.set('library', storedBooks);
@@ -44,8 +45,10 @@ export class StorageService {
   }
 
   public async removeFromLibrary(value: string): Promise<void> {
+    console.log(value);
     const storedBooks = await this.getLibrary();
     const newBooks = storedBooks.filter(book => book.googleId !== value);
+    console.log(newBooks);
     await this.storage.set('library', newBooks);
     this.library$.next(newBooks);
   }

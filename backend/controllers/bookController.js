@@ -19,14 +19,14 @@ const searchBooks = asynchandler(async (req, res) => {
         default: break;
     }
     let books = [];
-    if(result.items) {
+    if (result.items) {
         books = result.items.map(book => {
             return {
                 title: book.volumeInfo?.title,
-                author: book.volumeInfo?.authors?.length > 0 ? book.volumeInfo?.authors[0]: '',
+                author: book.volumeInfo?.authors?.length > 0 ? book.volumeInfo?.authors[0] : '',
                 image: book.volumeInfo?.imageLinks?.thumbnail ? book.volumeInfo?.imageLinks?.thumbnail : '',
                 description: book.volumeInfo?.description,
-                googleId: book.volumeInfo?.id,
+                googleId: book.id,
                 publisher: book.volumeInfo?.publisher,
                 publishedDate: new Date(book.volumeInfo?.publishedDate),
                 isbn_13: book.volumeInfo?.industryIdentifiers?.length > 0 ? book.volumeInfo?.industryIdentifiers[0].identifier : '',
