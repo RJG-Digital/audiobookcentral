@@ -14,6 +14,7 @@
         <ion-select-option value="title">Title</ion-select-option>
         <ion-select-option value="author">Author</ion-select-option>
         <ion-select-option value="isbn">ISBN</ion-select-option>
+
       </ion-select>
     </ion-col>
     <ion-col sizeSm="8" sizeMd="9" sizeXs="12">
@@ -33,6 +34,7 @@
     <ion-col *ngFor="let book of books">
       <ion-menu-toggle menu="search">
         <ion-card class="book-card" (click)="viewBookDetails(book)">
+          <ion-icon style="font-size: 16px;" class="lib" *ngIf="book.inLibrary" name="book-outline"></ion-icon>
           <ion-img [src]="book.image" class="book-img"></ion-img>
           <p class="book-author">{{book.author}}</p>
           <p class="book-title">{{book.title}}</p>
@@ -48,7 +50,8 @@
       <ion-icon class="icon-spacing" id="google" (click)="openSite(selectedBook.previewLink)" name="logo-google">
       </ion-icon>
       <ion-icon class="icon-spacing" id="wishList" (click)="addToWishList()" name="list-outline"></ion-icon>
-      <ion-icon class="icon-spacing" id="library" (click)="addToLibrary()" name="book-outline"></ion-icon>
+      <ion-icon *ngIf="selectedBook && !selectedBook.inLibrary" class="icon-spacing" id="library"
+        (click)="addToLibrary()" name="book-outline"></ion-icon>
       <ion-icon class="icon-spacing" id="audioBook" (click)="searchAudioBook()" name="headset-outline"></ion-icon>
     </ion-toolbar>
   </ion-header>

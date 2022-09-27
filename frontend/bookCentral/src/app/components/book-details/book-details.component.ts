@@ -19,6 +19,7 @@ export class BookDetailsComponent implements OnInit {
   @Output() close = new EventEmitter<void>();
 
   public selectedAudioBook: AudioBook;
+  public downloading = false;
 
   constructor(private bookService: BookService, private storageService: StorageService, private toastService: ToastService) { }
 
@@ -35,6 +36,7 @@ export class BookDetailsComponent implements OnInit {
   }
 
   public addToLibrary(audioBook: AudioBook) {
+    this.downloading = true;
     console.log(audioBook);
     if (audioBook._id) {
       this.book.audioBook = audioBook;
@@ -52,6 +54,7 @@ export class BookDetailsComponent implements OnInit {
             this.close.emit();
             this.toastService.presentToast('Added To Library!', 'success');
           }
+          this.downloading = false;
         });
     }
   }

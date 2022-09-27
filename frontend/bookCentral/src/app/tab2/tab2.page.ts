@@ -38,6 +38,7 @@ export class Tab2Page implements OnInit, OnDestroy {
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(lib => {
         this.library = lib;
+        this.library.sort((a: Book, b: Book) => (a.title > b.title) ? 1 : -1)
       });
   }
 

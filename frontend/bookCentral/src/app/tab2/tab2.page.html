@@ -1,14 +1,14 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      Library
+      Library <span>({{library.length > 0 ? library.length : 0 }})</span>
     </ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content [fullscreen]="true">
   <ion-list *ngIf="library.length > 0" id="library-content">
     <ion-menu-toggle menu="library">
-      <ion-item *ngFor="let book of library" (click)="selectBook(book)">
+      <ion-item style="margin: 24px;" *ngFor="let book of library" (click)="selectBook(book)">
         <ion-img [src]="book.image" style="height: 50px; margin-right:20px"></ion-img>
         <p>{{book.title}}</p>
         <ion-icon style="font-size: 26px; margin-left: 20px; color:#DB4437" *ngIf="book.audioBook"

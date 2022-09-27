@@ -21,11 +21,12 @@
           <p class="author-title">{{audioBook.author}}: {{audioBook.title}}</p>
           <ion-img class="book-image" [src]="audioBook.image"></ion-img>
           <P style="text-align: center;">Tracks: {{audioBook.tracks.length}}</P>
-          <ion-row *ngIf="page === 'search'">
-            <ion-button style="width:100%" expand="block" *ngIf="audioBook && audioBook.tracks.length > 0"
-              (click)="addToLibrary(audioBook)">
+          <ion-row *ngIf="page === 'search'" style="justify-content: center;">
+            <ion-button style="width:100%" expand="block"
+              *ngIf="audioBook && audioBook.tracks.length > 0 && !downloading" (click)="addToLibrary(audioBook)">
               <ion-icon name="save"></ion-icon>
             </ion-button>
+            <ion-spinner name="lines" *ngIf="downloading"></ion-spinner>
           </ion-row>
         </ion-card>
       </ion-row>

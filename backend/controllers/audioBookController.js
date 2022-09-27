@@ -257,7 +257,6 @@ const downloadBook = asynchandler(async (req, res) => {
                 book.tracks[i].path = webPath;
                 console.log(count, ' ', book.tracks.length)
                 if (count === (book.tracks.length)) {
-
                     const audioBooks = await AudioBook.find({ authorTitle: book.authorTitle });
                     if (!audioBooks || audioBooks.length === 0) {
                         await AudioBook.create(book);

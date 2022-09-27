@@ -4,7 +4,7 @@ import { BookService } from '../services/book.service';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
 import { StorageService } from 'src/app/services/storage.service';
 import { Browser } from '@capacitor/browser';
-import { take } from 'rxjs/operators'
+import { take, takeUntil } from 'rxjs/operators'
 import { ToastService } from '../services/toast.service';
 import { Subject } from 'rxjs';
 
@@ -34,7 +34,11 @@ export class Tab1Page implements OnInit {
   ) { }
 
   ngOnInit(): void {
-
+    this.storageService.library$.pipe(takeUntil(this.unsubscribe$))
+      .subscribe(lib => {
+        this.library = lib;
+        this.updateSearchesForLib();
+      });
   }
 
   public search(): void {
@@ -48,13 +52,14 @@ export class Tab1Page implements OnInit {
         .subscribe((books: Book[]) => {
           if (books) {
             this.books = books;
-            console.log(books);
+            this.updateSearchesForLib();
           }
         })
     }
   }
 
   public viewBookDetails(book: Book): void {
+    console.log(book);
     this.selectedBook = book;
   }
 
@@ -99,5 +104,11 @@ export class Tab1Page implements OnInit {
         }
         this.audioBookFindDone = true;
       });
+  }
+
+  private updateSearchesForLib() {
+    this.books.forEach(b => {
+      b.inLibrary = this.library.find(libBook => libBook.googleId === b.googleId) ? true : false;
+    });
   }
 }
