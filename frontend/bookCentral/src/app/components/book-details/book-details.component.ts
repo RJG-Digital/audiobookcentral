@@ -1,16 +1,17 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { AudioBook, Book } from 'src/app/models/bookModels';
-import { BookService } from 'src/app/services/book.service';
 import { StorageService } from 'src/app/services/storage.service';
-import { take } from 'rxjs/operators';
+import { take, takeUntil } from 'rxjs/operators';
 import { ToastService } from 'src/app/services/toast.service';
+import { SocketService } from 'src/app/services/socket.service';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-book-details',
   templateUrl: './book-details.component.html',
   styleUrls: ['./book-details.component.scss'],
 })
-export class BookDetailsComponent implements OnInit {
+export class BookDetailsComponent implements OnInit, OnDestroy {
   @Input() open = false;
   @Input() audioBookOptions: AudioBook[];
   @Input() audioBookFindDone = false;
@@ -20,11 +21,46 @@ export class BookDetailsComponent implements OnInit {
 
   public selectedAudioBook: AudioBook;
   public downloading = false;
+  public downloadProgress = 0;
+  public downloadProgressPercentage = '0%'
+  public downloadTrack = 0;
+  public downloadStarting = false;
 
-  constructor(private bookService: BookService, private storageService: StorageService, private toastService: ToastService) { }
+  private unsubscribe$ = new Subject<void>();
+
+  constructor(
+    private storageService: StorageService,
+    private toastService: ToastService,
+    private socketService: SocketService
+  ) { }
 
   ngOnInit() {
-    console.log(this.audioBookOptions);
+    this.socketService.listen('downloading')
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((ab: any) => {
+        console.log(ab)
+        if (ab) {
+          this.downloadStarting = false
+          this.downloading = true;
+          this.downloadProgress = ab.progress;
+          this.downloadProgressPercentage = Math.floor(this.downloadProgress * 100).toString();
+          this.downloadTrack = ab.track
+          console.log(ab);
+        }
+      });
+    this.socketService.listen('downloaded')
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((ab: any) => {
+        if (ab) {
+          console.log(ab);
+          this.book.audioBook = ab;
+          this.storageService.addToLibrary(this.book);
+          this.close.emit();
+          this.toastService.presentToast('Added To Library!', 'success');
+        }
+        this.downloading = false;
+      });
+
   }
 
   public onWillDismiss() {
@@ -36,7 +72,6 @@ export class BookDetailsComponent implements OnInit {
   }
 
   public addToLibrary(audioBook: AudioBook) {
-    this.downloading = true;
     console.log(audioBook);
     if (audioBook._id) {
       this.book.audioBook = audioBook;
@@ -44,18 +79,13 @@ export class BookDetailsComponent implements OnInit {
       this.close.emit();
       this.toastService.presentToast('Added To Library!', 'success');
     } else {
-      this.bookService.downloadBook(audioBook)
-        .pipe(take(1))
-        .subscribe(ab => {
-          if (ab) {
-            console.log(ab);
-            this.book.audioBook = ab;
-            this.storageService.addToLibrary(this.book);
-            this.close.emit();
-            this.toastService.presentToast('Added To Library!', 'success');
-          }
-          this.downloading = false;
-        });
+      this.downloadStarting = true;
+      this.socketService.emit('download', audioBook);
     }
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 }

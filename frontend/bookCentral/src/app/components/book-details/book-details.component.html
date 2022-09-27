@@ -23,10 +23,15 @@
           <P style="text-align: center;">Tracks: {{audioBook.tracks.length}}</P>
           <ion-row *ngIf="page === 'search'" style="justify-content: center;">
             <ion-button style="width:100%" expand="block"
-              *ngIf="audioBook && audioBook.tracks.length > 0 && !downloading" (click)="addToLibrary(audioBook)">
+              *ngIf="audioBook && audioBook.tracks.length > 0 && !downloading && !downloadStarting"
+              (click)="addToLibrary(audioBook)">
               <ion-icon name="save"></ion-icon>
             </ion-button>
-            <ion-spinner name="lines" *ngIf="downloading"></ion-spinner>
+            <ion-spinner *ngIf="downloadStarting" name="lines"></ion-spinner>
+
+            <span *ngIf="downloading">{{downloadTrack}} / {{audioBook.tracks.length}}</span>
+            <ion-progress-bar *ngIf="downloading" [value]="downloadProgress"></ion-progress-bar>
+            <span *ngIf="downloading">{{downloadProgressPercentage}}%</span>
           </ion-row>
         </ion-card>
       </ion-row>
