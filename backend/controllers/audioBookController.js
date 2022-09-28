@@ -243,6 +243,7 @@ const downloadBook = asynchandler(async (req, res) => {
     if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
     }
+
     for (let i = 0; i < book.tracks.length; i++) {
         https.get(book.tracks[i].path, (resp) => {
             // store the file
