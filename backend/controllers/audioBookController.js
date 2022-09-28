@@ -153,4 +153,4 @@ const downloadBook = asynchandler(async (req, res) => {
         });
     }
 })
-export { scrapeAudioBooks, findAudioBook, downloadBook };
+export { findAudioBook, downloadBook };
