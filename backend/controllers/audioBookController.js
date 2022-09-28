@@ -10,120 +10,6 @@ import AudioBook from '../models/audioBook.js';
 import fs from 'fs';
 import https from 'https';
 
-const scrapeAudioBooks = asynchandler(async (req, res) => {
-    const browser = await puppeteer.launch({
-        headless: false,
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    });
-    const page = await browser.newPage();
-    await page.setViewport({ width: 1366, height: 999 });
-    try {
-        // go to golden books URL.
-        await page.goto(GOLDEN_AUDIO_BOOKS_URL);
-        // get the list of genras
-        await page.waitForSelector('li.cat-item > a', { visible: true });
-        let genras = await page.$$('li.cat-item > a');
-        if (!genras.length) {
-            res.status(404);
-        }
-        // select the first Genra
-        await Promise.all([
-            page.waitForSelector('li.cat-item > a', { timeout: 5000 }),// The promise resolves after navigation has finished
-            page.waitForTimeout(1000),
-            genras[0].click(),
-            page.waitForNavigation()
-        ]);
-        // Get the list of books
-        await Promise.all([
-            page.waitForSelector('#main > a.next', { visible: true }),
-            page.waitForTimeout(1000),
-        ])
-        let nextButton = await page.$$('#main > a.next');
-        // Pages
-        while (nextButton) {
-            nextButton = await page.$$('#main > a.next');
-            await page.waitForSelector('.image-hover-wrapper > a', { visible: true });
-            const bookList = await page.$$('.image-hover-wrapper > a');
-
-            // Books per page
-            for (let j = 0; j < bookList.length; j++) {
-                const bookList = await page.$$('.image-hover-wrapper > a');
-                // Select each book
-                await Promise.all([
-                    page.waitForSelector('.image-hover-wrapper > a', { timeout: 5000 }),// The promise resolves after navigation has finished
-                    page.waitForTimeout(2000),
-                    bookList[j].click(),
-                    page.waitForNavigation()
-                ]);
-
-                // Get audio track handles:
-                await Promise.all([
-                    page.waitForSelector("audio", { timeout: 5000 }),// The promise resolves after navigation has finished
-                    page.waitForTimeout(2000),
-                ]);
-
-                let tracklist = await page.$$("audio");
-                // Get track paths
-                let paths = [];
-                if (tracklist.length > 0) {
-                    for (let k = 0; k < tracklist.length; k++) {
-                        const path = await (await tracklist[k].getProperty('src')).jsonValue();
-                        paths.push({
-                            path,
-                            trackNumber: k + 1
-                        });
-                    }
-                }
-                await Promise.all([
-                    page.waitForSelector('.entry-content > p > strong', { timeout: 5000 }),// The promise resolves after navigation has finished
-                    page.waitForTimeout(2000),
-                ]);
-                // Get text that has authors name:
-                let image = await page.$eval('.wp-caption > img', (element) => {
-                    return element.getAttribute('src');
-                });
-                let authorText = await page.$eval('.entry-content > p > strong', (element) => {
-                    return element.textContent;
-                });
-
-                const authorName = authorText.split(' – ')[0].trim();
-                const bookName = authorText.split(' – ')[1].trim();
-                const book = {
-                    title: bookName,
-                    author: authorName,
-                    image,
-                    tracks: paths
-                }
-                const existingBook = await AudioBook.find({ title: book.title });
-                if (!existingBook || existingBook.length === 0) {
-                    console.log('Adding: ', book.title);
-                    await AudioBook.create(book);
-                } else {
-                    console.log(book.title + ' already exists!');
-                }
-
-                // Go Back to book list
-                await page.goBack();
-                await Promise.all([
-                    page.waitForSelector('.image-hover-wrapper > a', { timeout: 5000 }),// The promise resolves after navigation has finished
-                    page.waitForTimeout(2000),
-                ]);
-
-            }
-            nextButton = await page.$$('#main > a.next');
-            await Promise.all([
-                page.waitForSelector('#main > a.next', { visible: true }),
-                page.waitForTimeout(2000),
-                nextButton[0].click(),
-            ])
-        }
-        res.json(book)
-
-    } catch (error) {
-
-    }
-});
-
 const findAudioBook = asynchandler(async (req, res) => {
     console.log(req.params.bookName);
     const regex = new RegExp(req.params.bookName, 'i');
@@ -136,7 +22,6 @@ const findAudioBook = asynchandler(async (req, res) => {
         (async () => {
             // launch puppeteer
             const browser = await puppeteer.launch({
-                headless: true,
                 args: ['--no-sandbox', '--disable-setuid-sandbox'],
             });
             const page = await browser.newPage();
