@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import * as io from 'socket.io-client'
+import { EndpointService } from './endpoint.service';
 
 @Injectable({
   providedIn: 'root'
@@ -8,10 +9,10 @@ import * as io from 'socket.io-client'
 export class SocketService {
 
   private socket: any;
-  private readonly url = 'ws://192.168.4.103:5500/';
 
-  constructor() {
-    this.socket = io.connect(this.url);
+
+  constructor(private endpointService: EndpointService) {
+    this.socket = io.connect(this.endpointService.baseSocketEndpoint);
     console.log('connecting');
   }
 
