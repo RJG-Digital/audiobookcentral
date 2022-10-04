@@ -19,10 +19,19 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.get('/', (req, res) => {
+    res.send('hello');
+})
 app.use('/api/books', audioBookRoutes);
 app.use(notFound);
 app.use(errorHandler);
-const server = http.createServer(app);
+const options = {
+    key: fs.readFileSync('./backend/certificates/key.pem'),
+    cert: fs.readFileSync('./backend/certificates/cert.pem')
+};
+const server = https.createServer(options, app, function (req, res) {
+    res.writeHead(200);
+})
 const io = new Server(server, { cors: { origin: '*' } });
 
 io.on('connection', (socket) => {
