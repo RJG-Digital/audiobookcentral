@@ -67,7 +67,6 @@ io.on('connection', (socket) => {
                 })
             });
         }
-        console.log(book);
     })
 })
 server.listen(PORT, () => {
