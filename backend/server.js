@@ -38,8 +38,8 @@ io.on('connection', (socket) => {
     console.log('connected')
     socket.on('download', (book) => {
         let count = 0;
-        const dir = `E:/online_books/audioBooks/${book.author}/${book.title}`;
-        const webDir = `http://192.168.4.103:8887/audioBooks/${book.author}/${book.title}`
+        const dir = `C:/audioBooks/onlineBooks/${book.author}/${book.title}`;
+        const webDir = `https://books.rjgdigitalcreations.com/onlineBooks/${book.author}/${book.title}`
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir, { recursive: true });
         }
