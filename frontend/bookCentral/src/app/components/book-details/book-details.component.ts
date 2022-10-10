@@ -5,6 +5,7 @@ import { take, takeUntil } from 'rxjs/operators';
 import { ToastService } from 'src/app/services/toast.service';
 import { SocketService } from 'src/app/services/socket.service';
 import { Subject } from 'rxjs';
+import { BookService } from 'src/app/services/book.service';
 
 @Component({
   selector: 'app-book-details',
@@ -32,7 +33,8 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
   constructor(
     private storageService: StorageService,
     private toastService: ToastService,
-    private socketService: SocketService
+    private socketService: SocketService,
+    private bookService: BookService
   ) { }
 
   ngOnInit() {
@@ -92,6 +94,13 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
     for (let i = 0; i < this.selectedFiles.length; i++) {
       formData.append(`track${i + 1}`, this.selectedFiles[i]);
     }
+    this.bookService.uploadAudioBook(formData)
+      .pipe(take(1))
+      .subscribe(data => {
+        if (data) {
+          console.log(data);
+        }
+      });
   }
 
   ngOnDestroy(): void {

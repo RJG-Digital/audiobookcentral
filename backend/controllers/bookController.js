@@ -1,6 +1,7 @@
 import asynchandler from 'express-async-handler';
 import dotenv from 'dotenv';
 import colors from 'colors';
+import fileupload from 'express-fileupload'
 import {
     GOOGLE_BOOKS_BY_ISBN,
     GOOLGE_BOOKS_BY_TITLE,
@@ -43,7 +44,7 @@ const searchBooks = asynchandler(async (req, res) => {
     res.json(books);
 });
 
-const uploadBook = asynchandler(async (req, res) => {
+const uploadBook = asynchandler(fileupload({ createParentPath: true }), (req, res) => {
     console.log(req.files);
 });
 
