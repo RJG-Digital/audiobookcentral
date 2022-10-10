@@ -11,7 +11,7 @@
       <ion-item style="margin: 24px;" *ngFor="let book of library" (click)="selectBook(book)">
         <ion-img [src]="book.image" style="height: 50px; margin-right:20px"></ion-img>
         <p>{{book.title}}</p>
-        <ion-icon style="font-size: 26px; margin-left: 20px; color:#DB4437" *ngIf="book.audioBook"
+        <ion-icon slot="end" style="font-size: 26px; margin-left: 20px; color:#DB4437" *ngIf="book.audioBook"
           name="headset-outline"></ion-icon>
       </ion-item>
     </ion-menu-toggle>
