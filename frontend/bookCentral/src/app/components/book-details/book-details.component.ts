@@ -38,21 +38,18 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
     this.socketService.listen('downloading')
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((ab: any) => {
-        console.log(ab)
         if (ab) {
           this.downloadStarting = false
           this.downloading = true;
           this.downloadProgress = ab.progress;
           this.downloadProgressPercentage = Math.floor(this.downloadProgress * 100).toString();
           this.downloadTrack = ab.track
-          console.log(ab);
         }
       });
     this.socketService.listen('downloaded')
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((ab: any) => {
         if (ab) {
-          console.log(ab);
           this.book.audioBook = ab;
           this.storageService.addToLibrary(this.book);
           this.close.emit();
@@ -72,7 +69,6 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
   }
 
   public addToLibrary(audioBook: AudioBook) {
-    console.log(audioBook);
     if (audioBook._id) {
       this.book.audioBook = audioBook;
       this.storageService.addToLibrary(this.book);

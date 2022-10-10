@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
 import * as Cordovasqlitedriver from 'localforage-cordovasqlitedriver';
 import { BehaviorSubject } from 'rxjs';
-import { Book } from '../models/bookModels';
+import { AudioBookTrack, Book } from '../models/bookModels';
 
 @Injectable({
   providedIn: 'root'
@@ -37,7 +37,6 @@ export class StorageService {
   }
 
   public async addToLibrary(book: Book): Promise<void> {
-    console.log(book);
     const storedBooks = await this.getLibrary();
     storedBooks.push(book);
     await this.storage.set('library', storedBooks);
@@ -45,10 +44,8 @@ export class StorageService {
   }
 
   public async removeFromLibrary(value: string): Promise<void> {
-    console.log(value);
     const storedBooks = await this.getLibrary();
     const newBooks = storedBooks.filter(book => book.googleId !== value);
-    console.log(newBooks);
     await this.storage.set('library', newBooks);
     this.library$.next(newBooks);
   }
@@ -70,5 +67,19 @@ export class StorageService {
     const newBooks = storedBooks.filter(book => book.googleId !== value);
     await this.storage.set('wishList', newBooks);
     this.wishList$.next(newBooks);
+  }
+  public async getBookFromLibraryGoogleById(googleBookId: string): Promise<Book> {
+    const storedBooks = await this.getLibrary();
+    return storedBooks.find(book => book.googleId === googleBookId);
+  }
+
+  public async updateBookMark(bookGoogleId: string, track: AudioBookTrack) {
+    const storedBooks = await this.getLibrary();
+    const bookToUpdate = storedBooks.find(book => book.googleId === bookGoogleId);
+    const index = bookToUpdate.audioBook.tracks.findIndex(t => t.trackNumber === track.trackNumber);
+    bookToUpdate.audioBook.tracks[index] = track;
+    const bookIndex = storedBooks.findIndex(b => b.googleId === bookToUpdate.googleId);
+    storedBooks[bookIndex] = bookToUpdate;
+    await this.storage.set('library', storedBooks);
   }
 }

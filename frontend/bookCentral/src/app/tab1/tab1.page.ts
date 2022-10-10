@@ -59,7 +59,6 @@ export class Tab1Page implements OnInit {
   }
 
   public viewBookDetails(book: Book): void {
-    console.log(book);
     this.selectedBook = book;
   }
 

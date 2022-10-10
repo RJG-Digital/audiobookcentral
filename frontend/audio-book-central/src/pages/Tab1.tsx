@@ -9,10 +9,8 @@ import BookCard from '../components/BookCard/bookCard';
 const Tab1: React.FC = () => {
   // Search book
   const search = async () => {
-    console.log(searchText);
     const payload = { searchType, searchText };
     const result = await axios.post('http://localhost:5500/api/books/search', payload);
-    console.log(result.data);
     setBooks(result.data);
   }
   const searchTextChange = (event: any) => {

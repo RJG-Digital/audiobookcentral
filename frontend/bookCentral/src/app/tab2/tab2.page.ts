@@ -61,7 +61,6 @@ export class Tab2Page implements OnInit, OnDestroy {
 
   public selectBook(book: Book) {
     this.selectedBook = book;
-    console.log('here');
   }
 
   public async openSite(url: string) {
@@ -99,6 +98,11 @@ export class Tab2Page implements OnInit, OnDestroy {
   }
 
   // Player
+  getCompletionPercentage() {
+    const numOfTracksDone = this.selectedBook.audioBook.tracks.filter(track => track.finished).length;
+    const numOfTracks = this.selectedBook.audioBook.tracks.length;
+    return Math.floor((numOfTracksDone / numOfTracks) * 100);
+  }
 
   ngOnDestroy(): void {
     this.unsubscribe.next();

@@ -14,9 +14,7 @@ const findAudioBook = asynchandler(async (req, res) => {
     console.log(req.params.bookName);
     const regex = new RegExp(req.params.bookName, 'i');
     const audioBooks = await AudioBook.find({ authorTitle: { $regex: regex } });
-    console.log(audioBooks);
     if (audioBooks && audioBooks.length > 0) {
-        console.log(audioBooks);
         res.json(audioBooks);
     } else {
         (async () => {

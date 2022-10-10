@@ -12,6 +12,10 @@ export interface AudioBook {
 export interface AudioBookTrack {
   path: string
   trackNumber: number
+  finished?: boolean
+  started?: boolean
+  lastStopTime?: number
+  duration?:number
 }
 
 export interface Book {

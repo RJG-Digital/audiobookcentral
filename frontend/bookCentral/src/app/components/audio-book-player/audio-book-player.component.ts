@@ -1,12 +1,13 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { AudioBook, AudioBookTrack, Book } from 'src/app/models/bookModels';
+import { StorageService } from 'src/app/services/storage.service';
 
 @Component({
   selector: 'app-audio-book-player',
   templateUrl: './audio-book-player.component.html',
   styleUrls: ['./audio-book-player.component.scss'],
 })
-export class AudioBookPlayerComponent implements OnInit, AfterViewInit {
+export class AudioBookPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() open = false;
   @Input() track: AudioBookTrack;
   @Input() book: Book;
@@ -23,23 +24,48 @@ export class AudioBookPlayerComponent implements OnInit, AfterViewInit {
   }
 
 
-  constructor() { }
+  constructor(private storageService: StorageService) { }
+  ngOnDestroy(): void {
+   this.playerRef.nativeElement = null;
+  }
 
-  ngOnInit() { }
+  ngOnInit() { 
+  }
 
-  ngAfterViewInit() { }
+  ngAfterViewInit() {
+
+   }
 
   public play() {
+    if(this.track && !this.track.started) {
+      this.track.started = true;
+    }
+    if(this.track && this.track.started && this.track.lastStopTime) {
+      this.audio.currentTime = this.track.lastStopTime;
+    }
+    if(!this.track.duration) {
+      this.track.duration = this.audio.duration;
+    }
+    if(this.audioProgress > 0) {
+      this.audio.currentTime = this.audioProgress;
+    }
     this.audio.play();
+    clearInterval(this.audioTimer);
     this.audioTimer = setInterval(() => {
       this.audioProgress = this.audio.currentTime;
       this.progressTime = this.convertHMS(this.audioProgress);
+      if(this.audioProgress === this.audio.duration) {
+        this.track.finished = true;
+      }
     }, 100);
   }
 
   public pause() {
-    this.audio.pause();
     clearInterval(this.audioTimer);
+    this.audio.pause();
+    this.track.lastStopTime = this.audioProgress;
+    this.storageService.updateBookMark(this.book.googleId, this.track);
+
   }
 
   public goForward(seconds: number) {
@@ -55,13 +81,12 @@ export class AudioBookPlayerComponent implements OnInit, AfterViewInit {
   }
 
   public startSeek() {
-    console.log('RIGHT HERE')
     clearInterval(this.audioTimer);
   }
 
   public seek(event: any) {
+    clearInterval(this.audioTimer);
     this.audio.currentTime = event.detail.value;
-    this.audioProgress = this.audio.currentTime;
     this.audioTimer = setInterval(() => {
       this.audioProgress = this.audio.currentTime;
       this.progressTime = this.convertHMS(this.audioProgress);
@@ -69,6 +94,9 @@ export class AudioBookPlayerComponent implements OnInit, AfterViewInit {
   }
 
   public onWillDismiss() {
+    this.track.lastStopTime = this.audioProgress;
+    // updateBook with track info
+    this.storageService.updateBookMark(this.book.googleId, this.track);
     this.close.emit();
   }
 
