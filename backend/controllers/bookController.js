@@ -43,4 +43,9 @@ const searchBooks = asynchandler(async (req, res) => {
     res.json(books);
 });
 
-export { searchBooks };
+const uploadBook = asynchandler(async (req, res) => {
+    const { formData } = req.body;
+    console.log(formData);
+});
+
+export { searchBooks, uploadBook };

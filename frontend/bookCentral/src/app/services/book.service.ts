@@ -28,4 +28,8 @@ export class BookService {
   public downloadBook(book: AudioBook): Observable<any> {
     return this.http.post<any>(`${this.baseEndpoint}/download`, { book });
   }
+
+  public uploadAudioBook(formData: FormData): Observable<any> {
+    return this.http.post(`${this.baseEndpoint}/upload`, { formData });
+  }
 }

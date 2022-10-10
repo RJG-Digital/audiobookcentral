@@ -33,8 +33,9 @@
             <ion-progress-bar *ngIf="downloading" [value]="downloadProgress"></ion-progress-bar>
             <span *ngIf="downloading">{{downloadProgressPercentage}}%</span>
           </ion-row>
-          <p>Not finding your book? <ion-button>Upload it!</ion-button></p>
-         
+          <p>Not finding your book? <ion-button>Upload it!</ion-button>
+          </p>
+          <input type="file" (change)="onFileSelected($event)">
         </ion-card>
 
       </ion-row>

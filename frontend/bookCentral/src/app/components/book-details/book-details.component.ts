@@ -25,6 +25,7 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
   public downloadProgressPercentage = '0%'
   public downloadTrack = 0;
   public downloadStarting = false;
+  public selectedFiles: File[] = [];
 
   private unsubscribe$ = new Subject<void>();
 
@@ -81,7 +82,16 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
   }
 
   public onFileSelected(event) {
-    console.log(event);
+    this.selectedFiles = event.target.files;
+  }
+
+  public onUpload() {
+    const formData = new FormData();
+    formData.append('bookTitle', this.book.title);
+    formData.append('bookAuthor', this.book.author);
+    for (let i = 0; i < this.selectedFiles.length; i++) {
+      formData.append(`track${i + 1}`, this.selectedFiles[i]);
+    }
   }
 
   ngOnDestroy(): void {
