@@ -80,6 +80,10 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
     }
   }
 
+  public onFileSelected(event) {
+    console.log(event);
+  }
+
   ngOnDestroy(): void {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();

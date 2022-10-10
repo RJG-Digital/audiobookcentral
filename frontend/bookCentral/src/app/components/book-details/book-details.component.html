@@ -33,11 +33,15 @@
             <ion-progress-bar *ngIf="downloading" [value]="downloadProgress"></ion-progress-bar>
             <span *ngIf="downloading">{{downloadProgressPercentage}}%</span>
           </ion-row>
+          <p>Not finding your book? <ion-button>Upload it!</ion-button></p>
+         
         </ion-card>
+
       </ion-row>
       <ion-row style="justify-content: center; margin-top: 40%;"
         *ngIf="audioBookOptions.length === 0 && audioBookFindDone">
         <h3>No Audio books were found...</h3>
+        <p>upload book</p>
       </ion-row>
     </ion-content>
   </ng-template>
