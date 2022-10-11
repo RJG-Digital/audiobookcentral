@@ -134,4 +134,4 @@ const uploadBook = asynchandler(async (req, res) => {
 });
 
 
-export { findAudioBook };
+export { findAudioBook, uploadBook };
