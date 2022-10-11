@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { AudioBook, Book } from 'src/app/models/bookModels';
 import { StorageService } from 'src/app/services/storage.service';
-import { take, takeUntil } from 'rxjs/operators';
+import { delay, take, takeUntil } from 'rxjs/operators';
 import { ToastService } from 'src/app/services/toast.service';
 import { SocketService } from 'src/app/services/socket.service';
 import { Subject, zip } from 'rxjs';
@@ -88,23 +88,23 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
   }
 
   public onUpload() {
-    const formData = new FormData();
     console.log(this.selectedFiles);
     const uploadCalls = [];
     for (let i = 0; i < this.selectedFiles.length; i++) {
-      formData.append('numberOfTracks', this.selectedFiles.length.toString());
-      formData.append('bookJson', JSON.stringify(this.book));
-      formData.append(`currentTrack`, (i + 1).toString());
-      formData.append(`track`, this.selectedFiles[i]);
-      uploadCalls.push(this.bookService.uploadAudioBook(formData));
+      setTimeout(() => {
+        const formData = new FormData();
+        formData.append('title', this.book.title);
+        formData.append('author', this.book.author);
+        formData.append(`track`, this.selectedFiles[i]);
+        this.bookService.uploadAudioBook(formData)
+          .pipe(take(1))
+          .subscribe(data => {
+            if (data) {
+              console.log(data);
+            }
+          });
+      }, 2000)
     }
-    zip([...uploadCalls])
-    .pipe(takeUntil(this.unsubscribe$))
-    .subscribe(data => {
-      if(data) {
-        console.log(data);
-      }
-    })
   }
 
   ngOnDestroy(): void {

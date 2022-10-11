@@ -14,6 +14,6 @@ export class EndpointService {
   constructor() { }
 
   public getBookEndpoint(): string {
-    return `${this.baseEndpoint}books/`;
+    return `${this.baseEndpoint}books`;
   }
 }
