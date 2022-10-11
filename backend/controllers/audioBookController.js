@@ -7,8 +7,6 @@ import {
     CATEGORY_ITEM
 } from '../config/constants.js';
 import AudioBook from '../models/audioBook.js';
-import fs from 'fs';
-import https from 'https';
 
 const findAudioBook = asynchandler(async (req, res) => {
     console.log(req.params.bookName);
@@ -119,38 +117,21 @@ const findAudioBook = asynchandler(async (req, res) => {
 
 });
 
-const downloadBook = asynchandler(async (req, res) => {
-    const { book } = req.body;
-    let count = 0;
-    const dir = `C:/audioBooks/onlineBooks/${book.author}/${book.title}`;
-    // const dir = `E:/online_books/audioBooks/${book.author}/${book.title}`;
-    const webDir = `https://books.rjgdigitalcreations.com/onlineBooks/${book.author}/${book.title}`
-    if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
+const uploadBook = asynchandler(async (req, res) => {
+    const {numberOfTracks, bookJson, currentTrack } = req.body;
+    const book = JSON.parse(bookJson);
+    console.log(numberOfTacks)
+    const file = req.files.track;
+    console.log(file);
+    const path = `C:/audioBooks/onlineBooks/${book.author}/${book.title}/${file.name}`;
+    console.log(path);
+    await file.mv(path);
+    if(numberOfTracks === currentTrack) {
+        // save and return audiobook
+        res.json({msg: 'Finished Successfully'});
     }
+    res.json({msg: 'Success'});
+});
 
-    for (let i = 0; i < book.tracks.length; i++) {
-        https.get(book.tracks[i].path, (resp) => {
-            // store the file
-            const path = `${dir}/${book.title}-${(i + 1) < 10 ? '0' + (i + 1) : (i + 1)}.mp3`;
-            const webPath = `${webDir}/${book.title}-${(i + 1) < 10 ? '0' + (i + 1) : (i + 1)}.mp3`;
-            const filePath = fs.createWriteStream(path);
-            resp.pipe(filePath);
-            filePath.on('finish', async () => {
-                filePath.close();
-                count++;
-                console.log('Download Completed');
-                book.tracks[i].path = webPath;
-                console.log(count, ' ', book.tracks.length)
-                if (count === (book.tracks.length)) {
-                    const audioBooks = await AudioBook.find({ authorTitle: book.authorTitle });
-                    if (!audioBooks || audioBooks.length === 0) {
-                        await AudioBook.create(book);
-                    }
-                    res.json(book);
-                }
-            })
-        });
-    }
-})
-export { findAudioBook, downloadBook };
+
+export { findAudioBook };

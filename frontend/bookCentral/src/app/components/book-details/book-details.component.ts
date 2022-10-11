@@ -4,7 +4,7 @@ import { StorageService } from 'src/app/services/storage.service';
 import { take, takeUntil } from 'rxjs/operators';
 import { ToastService } from 'src/app/services/toast.service';
 import { SocketService } from 'src/app/services/socket.service';
-import { Subject } from 'rxjs';
+import { Subject, zip } from 'rxjs';
 import { BookService } from 'src/app/services/book.service';
 
 @Component({
@@ -89,21 +89,22 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
 
   public onUpload() {
     const formData = new FormData();
-    formData.append('numberOfTacks', this.selectedFiles.length.toString());
-    formData.append('bookTitle', this.book.title);
-    formData.append('bookAuthor', this.book.author);
     console.log(this.selectedFiles);
-    this.socketService.emit('upload' , {files: this.selectedFiles, book: this.book});
+    const uploadCalls = [];
     for (let i = 0; i < this.selectedFiles.length; i++) {
-      formData.append(`track${i + 1}`, this.selectedFiles[i]);
+      formData.append('numberOfTracks', this.selectedFiles.length.toString());
+      formData.append('bookJson', JSON.stringify(this.book));
+      formData.append(`currentTrack`, (i + 1).toString());
+      formData.append(`track`, this.selectedFiles[i]);
+      uploadCalls.push(this.bookService.uploadAudioBook(formData));
     }
-    this.bookService.uploadAudioBook(formData)
-      .pipe(take(1))
-      .subscribe(data => {
-        if (data) {
-          console.log(data);
-        }
-      });
+    zip([...uploadCalls])
+    .pipe(takeUntil(this.unsubscribe$))
+    .subscribe(data => {
+      if(data) {
+        console.log(data);
+      }
+    })
   }
 
   ngOnDestroy(): void {
