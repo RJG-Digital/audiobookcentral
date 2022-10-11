@@ -7,6 +7,7 @@ import {
     CATEGORY_ITEM
 } from '../config/constants.js';
 import AudioBook from '../models/audioBook.js';
+import axios from 'axios';
 
 const findAudioBook = asynchandler(async (req, res) => {
     console.log(req.params.bookName);
@@ -118,20 +119,16 @@ const findAudioBook = asynchandler(async (req, res) => {
 });
 
 const uploadBook = asynchandler(async (req, res) => {
-    const {numberOfTracks, bookJson, currentTrack } = req.body;
-    const book = JSON.parse(bookJson);
-    console.log(numberOfTacks)
-    const file = req.files.track;
-    console.log(file);
-    const path = `C:/audioBooks/onlineBooks/${book.author}/${book.title}/${file.name}`;
-    console.log(path);
+    const {author, title } = req.body;
+    const file = req.files[`track`];
+    const path = `C:/audioBooks/onlineBooks/${author}/${title}/${file.name}`;
     await file.mv(path);
-    if(numberOfTracks === currentTrack) {
-        // save and return audiobook
-        res.json({msg: 'Finished Successfully'});
-    }
-    res.json({msg: 'Success'});
+    res.json({msg: 'Success', path});
 });
 
+const saveUploadedBook = asynchandler(async (req, res) => {
+    const {book, trackPath} = req.body;
+    // save and return audiobook
+})
 
-export { findAudioBook, uploadBook };
+export { findAudioBook, uploadBook, saveUploadedBook };
