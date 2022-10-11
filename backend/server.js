@@ -20,7 +20,12 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(fileupload({createParentPath: true}))
+app.use(fileupload({
+    createParentPath: true,
+    limits: {
+        fileSize: 1000000000
+    }
+}))
 app.get('/', (req, res) => {
     res.send('hello');
 })
@@ -69,7 +74,7 @@ io.on('connection', (socket) => {
                 })
             });
         }
-    })
+    });
 })
 server.listen(PORT, () => {
     console.log(`Server is now running on port ${PORT}`.green.inverse);

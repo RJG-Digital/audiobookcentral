@@ -44,14 +44,21 @@ const searchBooks = asynchandler(async (req, res) => {
 });
 
 const uploadBook = asynchandler(async (req, res) => {
-    const {numberOfFiles, bookTitle, bookAuthor } = req.body;
-    const filesToSave = []
-    for(let i = 0; i < parseInt(numberOfFiles); i++) {
+    const {numberOfTacks, bookTitle, bookAuthor } = req.body;
+    console.log(numberOfTacks)
+    const filesToSave = [];
+    const paths = [];
+    for(let i = 0; i < parseInt(numberOfTacks); i++) {
         const file = req.files[`track${i+1}`];
-        const path = `C:/audioBooks/onlineBooks/${bookAuthor}/${bookTitle}/track_${i + 1}`;
+        console.log(file);
+        const path = `C:/audioBooks/onlineBooks/${bookAuthor}/${bookTitle}/${file.name}`;
+        console.log(path);
+        paths.push(path);
         filesToSave.push(file.mv(path));
+
     }
     await Promise.all(filesToSave);
+    res.json(paths)
 });
 
 export { searchBooks, uploadBook };
