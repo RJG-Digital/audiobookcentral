@@ -89,8 +89,10 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
 
   public onUpload() {
     const formData = new FormData();
+    formData.append('numberOfTacks', this.selectedFiles.length.toString());
     formData.append('bookTitle', this.book.title);
     formData.append('bookAuthor', this.book.author);
+    console.log(this.selectedFiles);
     for (let i = 0; i < this.selectedFiles.length; i++) {
       formData.append(`track${i + 1}`, this.selectedFiles[i]);
     }

@@ -35,7 +35,7 @@
           </ion-row>
           <p>Not finding your book? <ion-button>Upload it!</ion-button>
           </p>
-          <input type="file" multiple (change)="onFileSelected($event)">
+          <input type="file" multiple name="nFiles" (change)="onFileSelected($event)">
           <ion-button type="button" *ngIf="selectedFiles && selectedFiles.length > 0" (click)="onUpload()">Upload
           </ion-button>
         </ion-card>
