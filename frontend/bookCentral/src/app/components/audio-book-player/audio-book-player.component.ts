@@ -26,27 +26,27 @@ export class AudioBookPlayerComponent implements OnInit, AfterViewInit, OnDestro
 
   constructor(private storageService: StorageService) { }
   ngOnDestroy(): void {
-   this.playerRef.nativeElement = null;
+    this.playerRef.nativeElement = null;
   }
 
-  ngOnInit() { 
+  ngOnInit() {
   }
 
   ngAfterViewInit() {
 
-   }
+  }
 
   public play() {
-    if(this.track && !this.track.started) {
+    if (this.track && !this.track.started) {
       this.track.started = true;
     }
-    if(this.track && this.track.started && this.track.lastStopTime) {
+    if (this.track && this.track.started && this.track.lastStopTime) {
       this.audio.currentTime = this.track.lastStopTime;
     }
-    if(!this.track.duration) {
+    if (!this.track.duration) {
       this.track.duration = this.audio.duration;
     }
-    if(this.audioProgress > 0) {
+    if (this.audioProgress > 0) {
       this.audio.currentTime = this.audioProgress;
     }
     this.audio.play();
@@ -54,7 +54,7 @@ export class AudioBookPlayerComponent implements OnInit, AfterViewInit, OnDestro
     this.audioTimer = setInterval(() => {
       this.audioProgress = this.audio.currentTime;
       this.progressTime = this.convertHMS(this.audioProgress);
-      if(this.audioProgress === this.audio.duration) {
+      if (this.audioProgress === this.audio.duration) {
         this.track.finished = true;
       }
     }, 100);
@@ -95,6 +95,9 @@ export class AudioBookPlayerComponent implements OnInit, AfterViewInit, OnDestro
 
   public onWillDismiss() {
     this.track.lastStopTime = this.audioProgress;
+    if (this.audioProgress === this.audio.duration) {
+      this.track.finished = true;
+    }
     // updateBook with track info
     this.storageService.updateBookMark(this.book.googleId, this.track);
     this.close.emit();
