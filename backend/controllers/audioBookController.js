@@ -7,7 +7,7 @@ import {
     CATEGORY_ITEM
 } from '../config/constants.js';
 import AudioBook from '../models/audioBook.js';
-import axios from 'axios';
+import fs from 'fs';
 
 const findAudioBook = asynchandler(async (req, res) => {
     console.log(req.params.bookName);
@@ -119,16 +119,39 @@ const findAudioBook = asynchandler(async (req, res) => {
 });
 
 const uploadBook = asynchandler(async (req, res) => {
-    const {author, title } = req.body;
+    const { author, title } = req.body;
     const file = req.files[`track`];
     const path = `C:/audioBooks/onlineBooks/${author}/${title}/${file.name}`;
     await file.mv(path);
-    res.json({msg: 'Success', path});
+    res.json({ msg: 'Success', path });
 });
 
 const saveUploadedBook = asynchandler(async (req, res) => {
-    const {book, trackPath} = req.body;
+    const { book } = req.body;
     // save and return audiobook
+    console.log(book);
+    const authorTitle = book.author + ' ' + book.title;
+    const audioBooks = await AudioBook.find({ authorTitle });
+    if (!audioBooks || audioBooks.length === 0) {
+        // create audioBook
+        // get trackPaths
+        const tracks = fs.readdirSync(`C:/audioBooks/onlineBooks/${book.author}/${book.title}/`);
+        const webTracks = tracks.map((t, index) => { return ({ path: `https://books.rjgdigitalcreations.com/onlineBooks/${book.author}/${book.title}/${t}`, trackNumber: index + 1 }) });
+        console.log(webTracks)
+        const ab = {
+            authorTitle,
+            title: book.title,
+            author: book.author,
+            image: book.image,
+            description: book.description,
+            genres: [],
+            tracks: webTracks
+        };
+        const createdAudioBook = await AudioBook.create(ab);
+        res.json(createdAudioBook);
+    } else {
+        res.json({ msg: 'Book already exists!' });
+    }
 })
 
 export { findAudioBook, uploadBook, saveUploadedBook };

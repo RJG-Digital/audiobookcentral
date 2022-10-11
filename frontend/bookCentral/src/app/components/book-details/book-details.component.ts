@@ -27,6 +27,8 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
   public downloadTrack = 0;
   public downloadStarting = false;
   public selectedFiles: File[] = [];
+  public uploading = false;
+  public uploadProgress = .00;
 
   private unsubscribe$ = new Subject<void>();
 
@@ -88,23 +90,42 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
   }
 
   public onUpload() {
-    console.log(this.selectedFiles);
-    const uploadCalls = [];
-    for (let i = 0; i < this.selectedFiles.length; i++) {
-      setTimeout(() => {
-        const formData = new FormData();
-        formData.append('title', this.book.title);
-        formData.append('author', this.book.author);
-        formData.append(`track`, this.selectedFiles[i]);
-        this.bookService.uploadAudioBook(formData)
-          .pipe(take(1))
-          .subscribe(data => {
-            if (data) {
-              console.log(data);
-            }
-          });
-      }, 2000)
+    if (this.selectedFiles && this.selectedFiles.length) {
+      let count = 1;
+      this.uploadProgress = .00;
+      this.uploading = true;
+      for (let i = 0; i < this.selectedFiles.length; i++) {
+        setTimeout(() => {
+          const formData = new FormData();
+          formData.append('title', this.book.title);
+          formData.append('author', this.book.author);
+          formData.append(`track`, this.selectedFiles[i]);
+          this.bookService.uploadAudioBook(formData)
+            .pipe(take(1))
+            .subscribe(data => {
+              if (data) {
+                console.log(data);
+                this.uploadProgress = parseFloat((count / this.selectedFiles.length).toFixed(2));
+                count++;
+                if (count === this.selectedFiles.length) {
+                  this.uploadProgress = parseFloat((count / this.selectedFiles.length).toFixed(2));
+                  // make call to save uploaded file.
+                  this.bookService.saveUploadedFiles(this.book)
+                    .pipe(take(1))
+                    .subscribe((savedBook: AudioBook) => {
+                      if (savedBook) {
+                        this.addToLibrary(savedBook);
+                      }
+                      this.uploading = false;
+                    });
+                  console.log('upload complete!');
+                }
+              }
+            });
+        }, 2000)
+      }
     }
+
   }
 
   ngOnDestroy(): void {

@@ -32,4 +32,8 @@ export class BookService {
   public uploadAudioBook(formData: FormData): Observable<any> {
     return this.http.post(`${this.baseEndpoint}/upload`, formData);
   }
+
+  public saveUploadedFiles(book: Book): Observable<any> {
+    return this.http.post(`${this.baseEndpoint}/saveUpload`, { book });
+  }
 }
