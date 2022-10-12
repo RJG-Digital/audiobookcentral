@@ -20,7 +20,9 @@ export class AudioBookPlayerComponent implements OnInit, AfterViewInit, OnDestro
   @ViewChild('audioPlayer') playerRef: ElementRef<HTMLAudioElement>;
 
   get audio(): HTMLAudioElement {
-    return this.playerRef.nativeElement;
+    if(this.playerRef && this.playerRef.nativeElement) {
+      return this.playerRef.nativeElement;
+    }
   }
 
 
@@ -37,27 +39,31 @@ export class AudioBookPlayerComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   public play() {
-    if (this.track && !this.track.started) {
-      this.track.started = true;
-    }
-    if (this.track && this.track.started && this.track.lastStopTime) {
-      this.audio.currentTime = this.track.lastStopTime;
-    }
-    if (!this.track.duration) {
-      this.track.duration = this.audio.duration;
-    }
-    if (this.audioProgress > 0) {
-      this.audio.currentTime = this.audioProgress;
-    }
-    this.audio.play();
-    clearInterval(this.audioTimer);
-    this.audioTimer = setInterval(() => {
-      this.audioProgress = this.audio.currentTime;
-      this.progressTime = this.convertHMS(this.audioProgress);
-      if (this.audioProgress === this.audio.duration) {
-        this.track.finished = true;
+    if(this.audio) {
+      if (this.track && !this.track.started) {
+        this.track.started = true;
       }
-    }, 100);
+      if (this.track && this.track.started && this.track.lastStopTime) {
+        this.audio.currentTime = this.track.lastStopTime;
+      }
+      if (!this.track.duration) {
+        this.track.duration = this.audio.duration;
+      }
+      if (this.audioProgress > 0) {
+        this.audio.currentTime = this.audioProgress;
+      }
+      this.audio.play();
+      clearInterval(this.audioTimer);
+      this.audioTimer = setInterval(() => {
+        if(this.audio) {
+          this.audioProgress = this.audio.currentTime;
+          this.progressTime = this.convertHMS(this.audioProgress);
+          if (this.audioProgress === this.audio.duration) {
+            this.track.finished = true;
+          }
+        }
+      }, 100);
+    }
   }
 
   public pause() {
