@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Browser } from '@capacitor/browser';
 import { AlertController, IonMenu } from '@ionic/angular';
-import { Dictionary } from 'lodash';
 import { Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
 import { AccordianData, AudioBookTrack, Book } from '../models/bookModels';

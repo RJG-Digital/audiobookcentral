@@ -85,6 +85,7 @@ export class Tab1Page implements OnInit {
 
   public addToWishList() {
     this.storageService.addToWishList(this.selectedBook);
+    this.toastService.presentToast('Added to wish list!', 'success');
   }
 
   public addToLibrary() {

@@ -58,7 +58,7 @@
 </ion-header>
 <ion-content [fullscreen]="true" id="library-content">
 <!-- Full List -->
-  <ion-list *ngIf="library.length > 0 && showFullListView" id="library-content">
+  <ion-list *ngIf="library.length > 0 && showFullListView">
     <ion-menu-toggle menu="library">
       <ion-item style="margin: 24px;" *ngFor="let book of library" (click)="selectBook(book)">
         <ion-img [src]="book.image" style="height: 50px; margin-right:20px"></ion-img>
