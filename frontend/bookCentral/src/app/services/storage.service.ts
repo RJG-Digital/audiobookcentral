@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
 import * as Cordovasqlitedriver from 'localforage-cordovasqlitedriver';
+import * as _ from 'lodash';
 import { BehaviorSubject } from 'rxjs';
 import { AudioBookTrack, Book } from '../models/bookModels';
+
 
 @Injectable({
   providedIn: 'root'
