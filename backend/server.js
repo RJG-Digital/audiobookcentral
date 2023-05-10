@@ -90,54 +90,38 @@ io.on('connection', (socket) => {
         });
         const bucketName = process.env.S3_BUCKET_NAME;
         const folderPath = `audioBooks/${book.author}/${book.title}`;
-        const params = {
-            Bucket: bucketName,
-            Key: folderPath
-          };
-        s3.headObject(params, function(err, data) {
-            if (err) {
-                console.log('Error: ', err.code);
-                if (err.code === 'NotFound') {
-                  console.log('Object not found');
-                  let count = 0;
-                  for (let i = 0; i < book.tracks.length; i++) {
-                      https.get(book.tracks[i].path, (resp) => {
-          
-                          const path = `${folderPath}/${book.title}-${(i + 1) < 10 ? '0' + (i + 1) : (i + 1)}.mp3`;
-                          const params = {
-                              Bucket: bucketName,
-                              Key: path,
-                              contentType: 'audio/mpeg'
-                          }
-                          params.Body = resp;
-                          s3.upload(params, async (err, data) => {
-                              if (err) {
-                                  console.log(`Error uploading file: ${err}`);
-                              } else {
-                                  console.log(`File uploaded successfully: ${data.Location}`);
-                                  count++;
-                                  socket.emit('downloading', ({ progress: (count / book.tracks.length), track: count, total: book.tracks.length }));
-                                  console.log('Download Completed');
-                                  book.tracks[i].path = data.Location;
-                                  console.log(count, ' ', book.tracks.length)
-                                  if (count === (book.tracks.length)) {
-                                      const audioBooks = await AudioBook.find({ authorTitle: book.authorTitle });
-                                      if (!audioBooks || audioBooks.length === 0) {
-                                          await AudioBook.create(book);
-                                      }
-                                      socket.emit('downloaded', book);
-                                  }
-                              }
-                          });
-                      });
-                  }
-                } else {
-                  console.log('Error getting object');
+        let count = 0;
+        for (let i = 0; i < book.tracks.length; i++) {
+            https.get(book.tracks[i].path, (resp) => {
+
+                const path = `${folderPath}/${book.title}-${(i + 1) < 10 ? '0' + (i + 1) : (i + 1)}.mp3`;
+                const params = {
+                    Bucket: bucketName,
+                    Key: path,
+                    contentType: 'audio/mpeg'
                 }
-              } else {
-                console.log('Object exists');
-              }
-        })
+                params.Body = resp;
+                s3.upload(params, async (err, data) => {
+                    if (err) {
+                        console.log(`Error uploading file: ${err}`);
+                    } else {
+                        console.log(`File uploaded successfully: ${data.Location}`);
+                        count++;
+                        socket.emit('downloading', ({ progress: (count / book.tracks.length), track: count, total: book.tracks.length }));
+                        console.log('Download Completed');
+                        book.tracks[i].path = data.Location;
+                        console.log(count, ' ', book.tracks.length)
+                        if (count === (book.tracks.length)) {
+                            const audioBooks = await AudioBook.find({ authorTitle: book.authorTitle });
+                            if (!audioBooks || audioBooks.length === 0) {
+                                await AudioBook.create(book);
+                            }
+                            socket.emit('downloaded', book);
+                        }
+                    }
+                });
+            });
+        }
        
     });
 })
