@@ -108,16 +108,16 @@ io.on('connection', (socket) => {
                         console.log(`File uploaded successfully: ${data.Location}`);
                         count++;
                         socket.emit('downloading', ({ progress: (count / book.tracks.length), track: count, total: book.tracks.length }));
-                        // console.log('Download Completed');
-                        // book.tracks[i].path = webPath;
-                        // console.log(count, ' ', book.tracks.length)
-                        // if (count === (book.tracks.length)) {
-                        //     const audioBooks = await AudioBook.find({ authorTitle: book.authorTitle });
-                        //     if (!audioBooks || audioBooks.length === 0) {
-                        //         await AudioBook.create(book);
-                        //     }
-                        //     socket.emit('downloaded', book);
-                        // }
+                        console.log('Download Completed');
+                        book.tracks[i].path = data.Location;
+                        console.log(count, ' ', book.tracks.length)
+                        if (count === (book.tracks.length)) {
+                            const audioBooks = await AudioBook.find({ authorTitle: book.authorTitle });
+                            if (!audioBooks || audioBooks.length === 0) {
+                                await AudioBook.create(book);
+                            }
+                            socket.emit('downloaded', book);
+                        }
                     }
                 });
             });
