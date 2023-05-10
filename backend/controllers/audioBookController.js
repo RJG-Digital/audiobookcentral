@@ -38,9 +38,11 @@ const findAudioBook = asynchandler(async (req, res) => {
                 await Promise.all([
                 bookList[0].click(),
                 page.waitForNavigation(),
-                page.mouse.move(1000, 40),
+                page.waitForTimeout(2000),
+                page.mouse.move(1000, 400),
                 page.waitForTimeout(2000),
                 ])
+                await page.mouse.move(1000, 400);
                 // Get audio track handles:
                 let tracklist = await page.$$("audio");
                 // Get text that has authors name:
