@@ -90,6 +90,10 @@ io.on('connection', (socket) => {
         });
         const bucketName = process.env.S3_BUCKET_NAME;
         const folderPath = `audioBooks/${book.author}/${book.title}`;
+        const params = {
+            Bucket: bucketName,
+            Key: folderPath
+          };
         s3.headObject(params, function(err, data) {
             if (err) {
                 console.log('Error: ', err.code);
