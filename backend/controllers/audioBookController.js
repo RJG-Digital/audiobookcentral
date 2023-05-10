@@ -9,7 +9,7 @@ import {
 import AudioBook from '../models/audioBook.js';
 import fs from 'fs';
 import multer from 'multer';
-import {s3Client} from 'aws-sdk/client-s3'
+import AWS from 'aws-sdk';
 
 
 const findAudioBook = asynchandler(async (req, res) => {
