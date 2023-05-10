@@ -1,0 +1,68 @@
+.view-icon {
+    margin: auto;
+    padding: 0 15px;
+    font-size: 24px;
+    cursor: pointer;
+}
+.book-image {
+    height: 300px;
+}
+.author-title {
+    text-align: center;
+}
+.desc {
+    margin-top: 0;
+    text-align: left;
+    font-size: 12px;
+}
+.center-text {
+    text-align: center;
+}
+.book-data {
+    text-align: left;
+    font-size: 12px;
+   
+}
+.icon-row {
+    margin: 20px 0 0 0;
+    font-size: 26px;
+    .icon-col {
+        text-align: end;
+    }
+}
+.icon-spacing {
+    margin: 0 20px;
+    font-size: 26px;
+    cursor: pointer;
+}
+#google {color: #4285F4;}
+#audioBook{color: #DB4437;}
+#wishList{color: #0F9D58;}
+#library{color: #F4B400;}
+ion-item .item-native {padding: 0;}
+
+.wishlist-modal {
+    .row {
+        font-size: 14px;
+        margin: 10px 0;
+    }
+    .book-data {
+        text-align: left;
+        font-size: 12px;
+    }
+    .modal-pic-row {
+        justify-content: left;
+        margin-bottom: 20px;
+        .modal-book-img {
+            height: 200px;
+        }
+    }
+    .modal-icon-row {
+        justify-content: left;
+        margin-top: 25px;
+        .modal-icon {
+            font-size: 24px;
+        }
+    }
+   
+}

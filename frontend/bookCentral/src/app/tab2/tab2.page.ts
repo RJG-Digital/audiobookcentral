@@ -3,8 +3,9 @@ import { Browser } from '@capacitor/browser';
 import { AlertController, IonMenu } from '@ionic/angular';
 import { Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
-import { AudioBookTrack, Book } from '../models/bookModels';
+import { AccordianData, AudioBookTrack, Book } from '../models/bookModels';
 import { BookService } from '../services/book.service';
+import { LodashService } from '../services/lodash.service';
 import { StorageService } from '../services/storage.service';
 import { ToastService } from '../services/toast.service';
 
@@ -20,13 +21,21 @@ export class Tab2Page implements OnInit, OnDestroy {
   public unsubscribe = new Subject<void>();
   public selectedTrack: AudioBookTrack;
   public openModal = false;
-
+  public authorAccordianData: AccordianData[] = [];
+  public alphabetAccordianData: AccordianData[] = [];
+  public showAlphaView = false;
+  public showFullListView = true;
+  public showAuthorView = false;
+  public allFilter = true;
+  public audioFilter = false;
+  public noAudioFilter = false;
 
   constructor(
     private storageService: StorageService,
     private bookService: BookService,
     private alertController: AlertController,
     private toastService: ToastService,
+    private lodashService: LodashService
   ) { }
 
   ngOnInit(): void {
@@ -38,7 +47,9 @@ export class Tab2Page implements OnInit, OnDestroy {
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(lib => {
         this.library = lib;
-        this.library.sort((a: Book, b: Book) => (a.title > b.title) ? 1 : -1)
+        this.library.sort((a: Book, b: Book) => (a.title > b.title) ? 1 : -1);
+        this.authorAccordianData = this.lodashService.createAuthorArray(this.library);
+        this.alphabetAccordianData = this.lodashService.createAlphabetArray(this.library);
       });
   }
 
@@ -97,8 +108,66 @@ export class Tab2Page implements OnInit, OnDestroy {
     await alert.onDidDismiss();
   }
 
+  public onChangeView(view: 'fullList' | 'author' | 'alpha' = 'fullList') {
+    switch(view) {
+      case 'fullList': 
+        this.showFullListView = true;
+        this.showAlphaView = false;
+        this.showAuthorView = false;
+        break;
+      case 'author':
+        this.showFullListView = false;
+        this.showAlphaView = false;
+        this.showAuthorView = true;
+        break;
+      case 'alpha': 
+        this.showFullListView = false;
+        this.showAlphaView = true;
+        this.showAuthorView = false;
+        break;
+      default:
+        this.showFullListView = true;
+        this.showAlphaView = false;
+        this.showAuthorView = false;
+        break;
+    }
+  }
+
+  public filterData(filter: 'all'| 'audio' | 'noAudio') {
+    this.getLibrary();
+    switch(filter) {
+      case 'all':
+        this.allFilter = true;
+        this.audioFilter = false;
+        this.noAudioFilter = false;
+        break;
+      case 'audio': 
+        this.filterAudio('a');
+        this.allFilter = false;
+        this.audioFilter = true;
+        this.noAudioFilter = false;
+        break;
+      case 'noAudio': 
+        this.filterAudio('na');
+        this.allFilter = false;
+        this.audioFilter = false;
+        this.noAudioFilter = true;
+        break;
+    }
+  }
+
+  public filterAudio(type: 'a'|'na') {
+    if(type === 'a') {
+      this.library = this.library.filter(b => b.audioBook);
+    } else if(type === 'na') {
+      this.library = this.library.filter(b => !b.audioBook);
+    }
+    this.authorAccordianData = this.lodashService.createAuthorArray(this.library);
+    this.alphabetAccordianData = this.lodashService.createAlphabetArray(this.library);
+  }
+
   // Player
-  getCompletionPercentage() {
+  public getCompletionPercentage() {
     const numOfTracksDone = this.selectedBook.audioBook.tracks.filter(track => track.finished).length;
     const numOfTracks = this.selectedBook.audioBook.tracks.length;
     return Math.floor((numOfTracksDone / numOfTracks) * 100);

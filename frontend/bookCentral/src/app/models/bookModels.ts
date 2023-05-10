@@ -45,3 +45,8 @@ export interface BookSearchPayload {
   searchType: 'title' | 'author' | 'isbn';
   searchText: string
 }
+
+export interface AccordianData {
+  title: string;
+  data: any[];
+}

@@ -3,10 +3,62 @@
     <ion-title>
       Library <span>({{library.length > 0 ? library.length : 0 }})</span>
     </ion-title>
+    <!-- Filter Popover -->
+    <ion-icon class="view-icon" color="primary" slot="end" name="filter-outline" id="filter-button">
+      <ion-popover trigger="filter-button" [dismissOnSelect]="true">
+        <ng-template>
+          <ion-content>
+            <ion-list>
+              <!-- All-->
+              <ion-item [button]="true" [detail]="false" (click)="filterData('all')">
+                All
+                <ion-icon slot="end" *ngIf="allFilter" color="success" name="checkmark-circle-outline"></ion-icon>
+              </ion-item>
+              <!-- Audio -->
+              <ion-item [button]="true" [detail]="false" (click)="filterData('audio')">
+                Audio
+                <ion-icon slot="end" *ngIf="audioFilter" color="success" name="checkmark-circle-outline"></ion-icon>
+              </ion-item>
+              <!-- No Audio -->
+              <ion-item [button]="true" [detail]="false" (click)="filterData('noAudio')">
+                No Audio
+                <ion-icon slot="end" *ngIf="noAudioFilter" color="success" name="checkmark-circle-outline"></ion-icon>
+              </ion-item>
+            </ion-list>
+          </ion-content>
+        </ng-template>
+      </ion-popover>
+    </ion-icon>
+    <!-- View Selection Popover -->
+    <ion-icon class="view-icon" color="tertiary" slot="end" name="eye-outline" id="popover-button"></ion-icon>
+    <ion-popover trigger="popover-button" [dismissOnSelect]="true">
+      <ng-template>
+        <ion-content>
+          <ion-list>
+            <!-- Full List Toggle -->
+            <ion-item [button]="true" [detail]="false" (click)="onChangeView('fullList')">
+              Full List 
+              <ion-icon slot="end" *ngIf="showFullListView" color="success" name="checkmark-circle-outline"></ion-icon>
+            </ion-item>
+            <!-- Author List Toggle -->
+            <ion-item [button]="true" [detail]="false" (click)="onChangeView('author')">
+              Author 
+              <ion-icon slot="end" *ngIf="showAuthorView" color="success" name="checkmark-circle-outline"></ion-icon>
+            </ion-item>
+            <!-- Alphabetical Toggle -->
+            <ion-item [button]="true" [detail]="false" (click)="onChangeView('alpha')">
+              Alphabetical 
+              <ion-icon slot="end" *ngIf="showAlphaView" color="success" name="checkmark-circle-outline"></ion-icon>
+            </ion-item>
+          </ion-list>
+        </ion-content>
+      </ng-template>
+    </ion-popover>
   </ion-toolbar>
 </ion-header>
-<ion-content [fullscreen]="true">
-  <ion-list *ngIf="library.length > 0" id="library-content">
+<ion-content [fullscreen]="true" id="library-content">
+<!-- Full List -->
+  <ion-list *ngIf="library.length > 0 && showFullListView">
     <ion-menu-toggle menu="library">
       <ion-item style="margin: 24px;" *ngFor="let book of library" (click)="selectBook(book)">
         <ion-img [src]="book.image" style="height: 50px; margin-right:20px"></ion-img>
@@ -16,46 +68,50 @@
       </ion-item>
     </ion-menu-toggle>
   </ion-list>
-
-
-
-  <ion-accordion-group>
-    <ion-accordion value="first">
-      <ion-item slot="header" color="light">
-        <ion-label>First Accordion</ion-label>
-      </ion-item>
-      <div class="ion-padding" slot="content">
-        First Content
-      </div>
-    </ion-accordion>
-    <ion-accordion value="second">
-      <ion-item slot="header" color="light">
-        <ion-label>Second Accordion</ion-label>
-      </ion-item>
-      <div class="ion-padding" slot="content">
-        Second Content
-      </div>
-    </ion-accordion>
-    <ion-accordion value="third">
-      <ion-item slot="header" color="light">
-        <ion-label>Third Accordion</ion-label>
-      </ion-item>
-      <div class="ion-padding" slot="content">
-        Third Content
-      </div>
-    </ion-accordion>
+<!-- Author List -->
+  <ion-accordion-group [multiple]="true" *ngIf="authorAccordianData && authorAccordianData.length > 0 && showAuthorView" >
+  <ion-accordion *ngFor="let data of authorAccordianData">
+    <ion-item slot="header" color="light">
+      <ion-label>{{data.title}} ({{data.data.length}})</ion-label>
+    </ion-item>
+    <ion-list *ngFor="let listItem of data.data"  slot="content">
+      <ion-menu-toggle menu="library">
+        <ion-item style="margin: 24px;" (click)="selectBook(listItem)">
+          <ion-img [src]="listItem.image" style="height: 50px; margin-right:20px"></ion-img>
+          <p>{{listItem.title}}</p>
+          <ion-icon slot="end" style="font-size: 26px; margin-left: 20px; color:#DB4437" *ngIf="listItem.audioBook"
+            name="headset-outline"></ion-icon>
+        </ion-item>
+      </ion-menu-toggle>
+    </ion-list>
+  </ion-accordion>
   </ion-accordion-group>
-
-
-
+  <!-- Alphabetical List -->
+  <ion-accordion-group [multiple]="true" *ngIf="alphabetAccordianData && alphabetAccordianData.length > 0 && showAlphaView" >
+    <ion-accordion *ngFor="let data of alphabetAccordianData">
+      <ion-item slot="header" color="light">
+        <ion-label>{{data.title}} ({{data.data.length}})</ion-label>
+      </ion-item>
+      <ion-list *ngFor="let listItem of data.data"  slot="content">
+        <ion-menu-toggle menu="library">
+          <ion-item style="margin: 24px;" (click)="selectBook(listItem)">
+            <ion-img [src]="listItem.image" style="height: 50px; margin-right:20px"></ion-img>
+            <p>{{listItem.title}}</p>
+            <ion-icon slot="end" style="font-size: 26px; margin-left: 20px; color:#DB4437" *ngIf="listItem.audioBook"
+              name="headset-outline"></ion-icon>
+          </ion-item>
+        </ion-menu-toggle>
+      </ion-list>
+    </ion-accordion>
+    </ion-accordion-group>
 </ion-content>
-
+<!-- Book Slide Out Menu -->
 <ion-menu #menu menuId="library" side="end" contentId="library-content">
   <ion-header>
     <ion-toolbar style="text-align: center;">
       <ion-icon class="icon-spacing" id="google" (click)="openSite(selectedBook.previewLink)" name="logo-google">
       </ion-icon>
-      <ion-icon *ngIf="selectedBook && selectedBook.audioBook" class="icon-spacing" id="audioBook"
+      <ion-icon *ngIf="selectedBook && !selectedBook.audioBook" class="icon-spacing" id="audioBook"
         (click)="searchAudioBook()" name="headset-outline"></ion-icon>
       <ion-icon (click)="presentAlert(menu, selectedBook)" class="icon-spacing" color="danger" slot="end"
         name="trash-outline"></ion-icon>
