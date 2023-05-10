@@ -22,7 +22,7 @@ const findAudioBook = asynchandler(async (req, res) => {
         (async () => {
             // launch puppeteer
             const browser = await puppeteer.launch({
-                headless: false,
+                headless: true,
                 args: ['--no-sandbox', '--disable-setuid-sandbox'],
             });
             const page = await browser.newPage();
@@ -38,7 +38,6 @@ const findAudioBook = asynchandler(async (req, res) => {
                 await Promise.all([
                 bookList[0].click(),
                 page.waitForNavigation(),
-                page.waitForTimeout(2000),
                 page.mouse.move(1000, 40),
                 page.waitForTimeout(2000),
                 ])
