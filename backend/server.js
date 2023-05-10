@@ -83,7 +83,7 @@ io.on('connection', (socket) => {
     console.log('connected')
     socket.on('download', (book) => {
         // store the file
-        const s3 = AWS.s3({
+        const s3 = new AWS.S3({
             accessKeyId: process.env.S3_ACCESS_KEY,
             secretAccessKey: process.env.S3_SECERET_ACCESS_KEY,
             region: process.env.S3_BUCKET_REGION,
@@ -91,9 +91,6 @@ io.on('connection', (socket) => {
         const bucketName = process.env.S3_BUCKET_NAME;
         const folderPath = `audioBooks/${book.author}/${book.title}`;
         let count = 0;
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir, { recursive: true });
-        }
         for (let i = 0; i < book.tracks.length; i++) {
             https.get(book.tracks[i].path, (resp) => {
 
