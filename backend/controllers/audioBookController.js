@@ -8,6 +8,9 @@ import {
 } from '../config/constants.js';
 import AudioBook from '../models/audioBook.js';
 import fs from 'fs';
+import multer from 'multer';
+import {s3Client} from 'aws-sdk/client-s3'
+
 
 const findAudioBook = asynchandler(async (req, res) => {
     console.log(req.params.bookName);
