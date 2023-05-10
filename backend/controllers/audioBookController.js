@@ -26,16 +26,19 @@ const findAudioBook = asynchandler(async (req, res) => {
             await page.setViewport({ width: 1366, height: 1268 });
             try {
                 await page.goto(`${GOLDEN_AUDIO_BOOKS_URL}/?s=${req.params.bookName}`); // go to golden books URL.
-                await page.waitForSelector(".image-hover-wrapper", { visible: true });
-                let bookList = await page.$$(".image-hover-wrapper");
+                await page.waitForSelector(".wp-post-image", { visible: true });
+                let bookList = await page.$$(".wp-post-image");
                 if (!bookList[0]) {
                     await browser.close();
                     return [];
                 }
-                await bookList[0].click();
-                await page.waitForNavigation();
-                await page.mouse.move(1000, 40);
-                await page.waitForTimeout(2000);
+                await Promise.all([
+                bookList[0].click(),
+                page.waitForNavigation(),
+                page.waitForTimeout(2000),
+                page.mouse.move(1000, 40),
+                page.waitForTimeout(2000),
+                ])
                 // Get audio track handles:
                 let tracklist = await page.$$("audio");
                 // Get text that has authors name:
