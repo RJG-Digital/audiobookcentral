@@ -111,6 +111,8 @@
     <ion-toolbar style="text-align: center;">
       <ion-icon class="icon-spacing" id="google" (click)="openSite(selectedBook.previewLink)" name="logo-google">
       </ion-icon>
+      <ion-icon class="icon-spacing" id="dl" (click)="download(selectedBook)" name="download">
+      </ion-icon>
       <ion-icon *ngIf="selectedBook && !selectedBook.audioBook" class="icon-spacing" id="audioBook"
         (click)="searchAudioBook()" name="headset-outline"></ion-icon>
       <ion-icon (click)="presentAlert(menu, selectedBook)" class="icon-spacing" color="danger" slot="end"
@@ -133,6 +135,7 @@
     <ion-list *ngIf="selectedBook.audioBook">
       <ion-item style="padding: 0;" button *ngFor="let track of selectedBook.audioBook.tracks" (click)="selectTrack(track)">
         <span>{{track.trackNumber}}</span>
+        <a [href]="track.path"  download="test.zip">DL</a>
       <span *ngIf="track.lastStopTime && ((track.lastStopTime / track.duration) * 100).toFixed(0) !== '100'" slot="end">{{((track.lastStopTime / track.duration) * 100).toFixed(0)}}%</span>
       <ion-icon *ngIf="track.lastStopTime && ((track.lastStopTime / track.duration) * 100).toFixed(0) === '100'" slot="end" color="success" name="checkmark-circle-outline"></ion-icon>
     </ion-item>

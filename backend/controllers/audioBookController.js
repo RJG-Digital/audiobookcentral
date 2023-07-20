@@ -8,9 +8,9 @@ import {
 } from '../config/constants.js';
 import AudioBook from '../models/audioBook.js';
 import fs from 'fs';
-import multer from 'multer';
 import AWS from 'aws-sdk';
-
+import path from 'path';
+import { Storage } from '@google-cloud/storage';
 
 const findAudioBook = asynchandler(async (req, res) => {
     console.log(req.params.bookName);
@@ -35,13 +35,12 @@ const findAudioBook = asynchandler(async (req, res) => {
                     await browser.close();
                     return [];
                 }
-                await Promise.all([
-                bookList[0].click(),
-                page.waitForNavigation(),
-                page.waitForTimeout(2000),
-                ])
+                console.log('right here')
+                await bookList[0].click(),
+                await page.waitForTimeout(2000),
                 await page.mouse.move(1000, 400);
-                await page.waitForTimeout(2000);
+                await page.waitForSelector('.wp-caption');
+
                 // Get audio track handles:
                 let tracklist = await page.$$("audio");
                 // Get text that has authors name:
@@ -132,6 +131,87 @@ const uploadBook = asynchandler(async (req, res) => {
     res.json({ msg: 'Success', path });
 });
 
+const uploadBookToS3 = asynchandler(async (req, res) => {
+    const dirPath = req.body.dirPath;
+    const bookName = req.body.bookName;
+    const s3 = new AWS.S3({
+        accessKeyId: process.env.S3_ACCESS_KEY,
+        secretAccessKey: process.env.S3_SECERET_ACCESS_KEY,
+        region: process.env.S3_BUCKET_REGION,
+    });
+    // Read files in dirPath 
+    fs.readdir(dirPath, (err, files) => {
+        if (err) {
+          console.error('Error reading folder:', err);
+          return;
+        }
+    
+        files.forEach((file) => {
+          const filePath = path.join(dirPath, file);
+          console.log(filePath);
+          const params = {
+            Bucket: process.env.S3_BUCKET_NAME,
+            Key: `AudioBooks/Stephen King/${bookName}/${file}`,
+            Body: fs.createReadStream(filePath),
+          };
+        
+          s3.upload(params, function(err, data) {
+            if (err) {
+              console.error('Error uploading file:', err);
+            } else {
+              console.log('File uploaded successfully. File URL:', data.Location);
+            }
+          });
+        });
+      });
+
+
+});
+
+const uploadBookToGoogleCloud = asynchandler(async (req, res) => {
+    const dirPath = req.body.dirPath;
+    const bookName = req.body.bookName;
+    const authorName = req.body.authorName;
+    const keyFilename = 'storageKey.json'
+    const projectId = 'sincere-hybrid-393021'
+    const storage = new Storage({
+        projectId,
+        keyFilename
+    });
+    const bucket = storage.bucket('audiobook-bucket');
+       // Read files in dirPath 
+       fs.readdir(dirPath, (err, files) => {
+        if (err) {
+          console.error('Error reading folder:', err);
+          return;
+        }
+    
+        files.forEach((file) => {
+            const filePath = path.join(dirPath, file);
+            console.log(filePath);
+            const destinationPath = `${authorName}/${bookName}/${file}`;
+            const blob = bucket.file(destinationPath);
+            const blobStream = blob.createWriteStream();
+
+            // Read the content of the file
+            const readStream = fs.createReadStream(filePath);
+
+            // Pipe the read stream to the write stream
+            readStream.pipe(blobStream);
+
+            blobStream.on('finish', async () => {
+                console.log(`${file} uploaded successfully.`);
+                const signedUrl = await getSignedUrl(bucket, destinationPath);
+                console.log(`URL for ${destinationPath}: ${signedUrl}`);
+            });
+
+            blobStream.on('error', (e) => {
+                console.log(`Error uploading ${file}:`, e);
+            });
+        });
+      });
+})
+
 const saveUploadedBook = asynchandler(async (req, res) => {
     const { book } = req.body;
     // save and return audiobook
@@ -158,6 +238,69 @@ const saveUploadedBook = asynchandler(async (req, res) => {
     } else {
         res.json({ msg: 'Book already exists!' });
     }
-})
+});
 
-export { findAudioBook, uploadBook, saveUploadedBook };
+const downloadBook = asynchandler(async (req, res) => {
+    const s3 = new AWS.S3({
+        accessKeyId: process.env.S3_ACCESS_KEY,
+        secretAccessKey: process.env.S3_SECERET_ACCESS_KEY,
+        region: process.env.S3_BUCKET_REGION,
+    });
+    const authorName = req.params.authorName;
+    const bookNane = req.params.bookName;
+    const objectsToDownload = [];
+    // audiobookcentral/audioBooks/Stephen King/The Shining/
+    console.log(`audiobookcentral/${authorName}/${bookNane}/`)
+    // Get list of objects from S3
+    s3.listObjectsV2({ Bucket: 'audiobookcentral', Prefix: `audioBooks/${authorName}/${bookNane}/` }, (err, data) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).send(err);
+      }
+  
+      data.Contents.forEach((obj) => {
+        const params = {
+          Bucket: 'audiobookcentral',
+          Key: obj.Key
+        };
+  
+        objectsToDownload.push(params);
+      });
+  
+      // Call the download function after adding all the files to the array
+      download(objectsToDownload);
+    });
+  
+    function download(objectsToDownload) {
+        // Check if there are any objects to download
+        if (objectsToDownload.length === 0) {
+          return res.status(404).send('No files found to download.');
+        }
+      
+        // Set the content-disposition header for the response
+        res.attachment(objectsToDownload[0].Key);
+      
+        // Download each file and pipe it to the response stream
+        objectsToDownload.forEach((obj) => {
+          const s3Stream = s3.getObject(obj).createReadStream();
+          s3Stream.on('error', (err) => {
+            console.error(err);
+            return res.status(500).send(err);
+          });
+          s3Stream.pipe(res);
+        });
+      }
+});
+
+async function getSignedUrl(bucket, objectName) {
+    const options = {
+        version: 'v4',
+        action: 'read',
+        expires: Date.now() + 15 * 60 * 1000, // URL expires in 15 minutes (adjust as needed)
+    };
+
+    const [url] = await bucket.file(objectName).getSignedUrl(options);
+    return url;
+}
+      
+export { findAudioBook, uploadBook, saveUploadedBook, downloadBook, uploadBookToS3, uploadBookToGoogleCloud };

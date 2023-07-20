@@ -38,7 +38,7 @@ const options = {
     key: fs.readFileSync('./backend/certificates/key.pem'),
     cert: fs.readFileSync('./backend/certificates/cert.pem')
 };
-const server = https.createServer(options, app, function (req, res) {
+const server = http.createServer( options, app, function (req, res) {
     res.writeHead(200);
 })
 const io = new Server(server, { cors: { origin: '*' } });

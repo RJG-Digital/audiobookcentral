@@ -8,6 +8,9 @@ import { BookService } from '../services/book.service';
 import { LodashService } from '../services/lodash.service';
 import { StorageService } from '../services/storage.service';
 import { ToastService } from '../services/toast.service';
+import { saveAs } from 'file-saver';
+import * as JSZip from 'jszip';
+
 
 @Component({
   selector: 'app-tab2',
@@ -171,6 +174,23 @@ export class Tab2Page implements OnInit, OnDestroy {
     const numOfTracksDone = this.selectedBook.audioBook.tracks.filter(track => track.finished).length;
     const numOfTracks = this.selectedBook.audioBook.tracks.length;
     return Math.floor((numOfTracksDone / numOfTracks) * 100);
+  }
+
+  public download(book: Book) {
+    this.bookService.downloadBook(book)
+    .pipe(take(1))
+    .subscribe((data: any) => {
+      const blob = new Blob([data], { type: 'application/zip' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'files';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }, (err) => {
+      console.error(err);
+    });
   }
 
   ngOnDestroy(): void {

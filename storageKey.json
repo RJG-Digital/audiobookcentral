@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "sincere-hybrid-393021",
+  "private_key_id": "48f8452b5be9a9e9c77a6b2a5d7067829ab5d0c6",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCjS3w1B/X20W8i\nt+GC06a4k1JI0mQ9N6JWjEtvCthO2zzCuBCF+zTDpmXZkOPurdaNpQOv7H25QoQ0\nJLnIXAikvuFvQ0d0oGyeg8poNu/uxsqp4YiOvNoV9kxCCK/gAN2n8z6ezrLQjzzL\n1Rwc6N96rHhEZy+12RQebIOXU4FK5p7Zp0tmf1pzvw/AtzqxCtrlfCpXQcfoCR5h\nqjTDNLfC3z/inuo4wBASEtF6aKXtt90oTwRfRvFdtUwv5bbQb1swdwci+zsjo5fh\nLDHNYDwICrfIDNvrH3VW4xr/Sf5AnFy1eIc6xoQ+5Je8jwhSrhz3yxXg1e9iIVuT\nxTR6jIqZAgMBAAECggEAAoa8252C1L2i6cdXqzxm3apVJqXEob1+MDcYRVXxCJqe\nixz/D8eWESR+T7pMtckFjahHe+hdfekqyPC8Lr6dGUllDPbeQI5pJ8mpBGmR1uCc\noDoKRg+4vbK+CskoyWnSBBLAva27zqYMqNL5o0kyCJXpqsCVmHYM4uHxu5IHPndN\nE3uZcuUNUvgJEOIG/XxguB7D6BRTmEbsqS7OijLaJNOgZNJbi3hG+cczn9mz7RaD\nSNgPtkzeSnApgOGrFo6u7Q2u9WJMhLu8aKw8uSDd9hXtK7ohMawLGvImYsHEAt9z\n0nTJZB1J7NXZj4GGfg44fPoChFxxiH7E4oNvB7rCgQKBgQDhSgPWN6DXRdsPOq1f\n7IO5eV87L6n+zshzo8j9kT+Yu5lhreuA+huHYJXBcR9Pc49c9NSXdGfdmS/w2yR3\nt30lVd42hxwTj1rNqce4YRdEid86uqxgz2zkGi3hoxgaQvTqpKLcELylHBthjiym\nd3QEKBlazjwVED6iYq4+zDUx2QKBgQC5jgmFgxK4yQQJt8aZWXGjdAc2sIdkoAMj\nnQstY45mKdD5bKBMRf0bdT8voED0/HTeNEZLPthHeJOYS6SeNOyzs1mLAsdsqwyO\nnE7Zkey+nHm8jkzpfqd+PYGR7BLksTkaGO3HC/1Hh1USvkeefukUcrzc4BJWI0SH\nbDef5lHmwQKBgBV6YPNDSmo7lq7VAUJr4gMEtzeFS8enHyUnMDo8ZrvA5taRJiqd\nrZIyexR+HGYOtlQ+YyYtStmtiQyFV+yx6ZRto0m/h8W1nQqObSP+3aEDI+0NbvGr\n1M3KUSV5zwpx57eXCo/AaLu0+kdKrqcQLFdZG1G057V6Xv5MOiByh3/BAoGALDU4\n84Q866WIvr/4IwT6XBUCuvbn6wNsfAmoZhH4FUMVNLe6oTFzkh0nBrPJhhS3y1Dt\nBnRclvqVP42WFNNLKa0rQkFRPgSqozd+Wbu4idlB77h/foncYelJe3ihL7dBgYQ6\n8lda6rXFgQewjIR0B5kmggEonTkd1J3lysTW8oECgYEAzDBcMI42BCOyQCp/gbL6\nuXNQtEwZTtefWTYVfYa1Kdg3hHgm+uAu+8906AFubAvdpUvk1q9PMxPFWrsSpbH1\nwh6ZknZr/628yr/90rdbehxy8Yf0/D5XV5oKUVKPE3cg5nIB/reaEGpAG+EF4FSi\nZob3sG3/8o0QhDLKIyOA940=\n-----END PRIVATE KEY-----\n",
+  "client_email": "audiobook-storage@sincere-hybrid-393021.iam.gserviceaccount.com",
+  "client_id": "111576247413366480743",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/audiobook-storage%40sincere-hybrid-393021.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

@@ -1,10 +1,11 @@
 import express from 'express';
-import { findAudioBook, uploadBook, saveUploadedBook } from '../controllers/audioBookController.js';
+import { findAudioBook, uploadBook, saveUploadedBook, downloadBook, uploadBookToS3, uploadBookToGoogleCloud } from '../controllers/audioBookController.js';
 import { searchBooks } from '../controllers/bookController.js';
 const router = express.Router();
+router.get('/:bookName', findAudioBook);
+router.get('/download/:authorName/:bookName', downloadBook);
 router.post('/search', searchBooks);
 router.post('/upload', uploadBook);
 router.post('/saveUpload', saveUploadedBook);
-router.get('/:bookName', findAudioBook);
-
+router.post('/uploadAudioBook', uploadBookToGoogleCloud);
 export default router;
